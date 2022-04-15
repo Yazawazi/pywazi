@@ -7,6 +7,7 @@ class: waziRequest
 import urllib3
 import certifi
 from mods import waziFun
+from mods import waziDownload
 from ins.waziInsLog import waziLog
 
 urllib3.disable_warnings()
@@ -34,6 +35,9 @@ class waziRequest:
         headers: dict
             The custom headers.
             default: A chrome user-agent header.
+        
+        downloadClass: waziDownload
+            The download class.
     
     Methods:
         - Please use help()
@@ -56,7 +60,32 @@ class waziRequest:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
                           "Chrome/93.0.4577.82 Safari/537.36"
         }
+        self.downloadClass = waziDownload.waziDownload()
         self.name = self.__class__.__name__
+
+    def changeThreadsNumber(self, tn):
+        """
+        waziRequest.changeThreadsNumber(self, tr)
+        *Change the world.*
+
+        Set the number of threads.
+
+        Parameters:
+            tn: int or str
+                The number of threads.
+        
+        Return:
+            Type: int
+            Current threads number.
+        
+        Errors:
+            None
+        """
+        fuName = waziFun.getFuncName()
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到线程数量信息，正在写入配置。")
+        self.downloadClass.changeThreadsNumber(tn)
+        waziLog.log("info", f"({self.name}.{fuName}) 写入完成，目前配置为： {self.downloadClass.getThreadsNumber()}")
+        return int(tn)
 
     def useProxies(self, isUse):
         """
@@ -472,7 +501,20 @@ class waziRequest:
                 elif method.lower() == "put":
                     temp = http.request("PUT", url, body = data, headers = self.headers)
                 elif method.lower() == "download":
-                    pass
+                    if self.isUseProxies:
+                        protocol = self.proxies.split(":")[0]
+                        proxies = {protocol: self.proxies}
+                        if "http" in protocol:
+                            proxies = {
+                                "http": self.proxies,
+                                "https": self.proxies
+                            }
+                    temp = self.downloadClass.run(
+                        url = url,
+                        filePath = data,
+                        headers = self.headers,
+                        proxies = proxies
+                    )
                 else:
                     temp = None
             except:
@@ -491,7 +533,20 @@ class waziRequest:
                 elif method.lower() == "put":
                     temp = http.request("PUT", url, body = data)
                 elif method.lower() == "download":
-                    pass
+                    if self.isUseProxies:
+                        protocol = self.proxies.split(":")[0]
+                        proxies = {protocol: self.proxies}
+                        if "http" in protocol:
+                            proxies = {
+                                "http": self.proxies,
+                                "https": self.proxies
+                            }
+                    temp = self.downloadClass.run(
+                        url = url,
+                        filePath = data,
+                        headers = {},
+                        proxies = proxies
+                    )
                 else:
                     temp = None
             except:
@@ -595,7 +650,9 @@ class waziRequest:
                 return waziRequest.put(self, params["url"], params["data"])
             elif params["method"].lower() == "download":
                 waziLog.log("info", f"({self.name}.{fuName}) 检测到下载模式，递交给 DOWNLOAD 函数处理。")
-                return waziRequest.download(self, params["url"], params["filePath"])
+                if "threads" in params:
+                    waziRequest.changeThreadsNumber(self, params["threads"])
+                return waziRequest.download(self, params["url"], params["data"])
             else:
                 waziLog.log("error", f"({self.name}.{fuName}) 未检测到任何请求模式。")
                 return "Sorry, method must be get, post or put. / 对不起，模式一定得是 GET, POST 或者 PUT 呜呜呜。"

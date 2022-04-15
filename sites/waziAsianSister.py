@@ -137,9 +137,9 @@ class waziAsianSister:
             waziLog.log("info", f"({self.name}.{fuName}) 获取成功，Soup 返回中。")
             return soup
     
-    def downloadFile(self, url, name, path):
+    def downloadFile(self, url, name, path, video = False):
         """
-        waziAsianSister.downloadFile(self, url, name, path)
+        waziAsianSister.downloadFile(self, url, name, path, video = False)
         *Sweet Trouble.*
 
         Download a file from a link for asiansister.com.
@@ -153,6 +153,11 @@ class waziAsianSister:
             
             path: str
                 The path to save the file.
+            
+            video: bool
+                Whether the file is a video.
+                If True, will use waziDownload to download the video.
+                Default: False
             
         Return:
             Type: bool
@@ -191,21 +196,33 @@ class waziAsianSister:
             tempHeaders["Referer"] = "https://asiansister.com/"
         waziLog.log("debug", f"({self.name}.{fuName}) 合成完毕： {tempParams}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在处理请求参数。")
-        requestParams = self.request.handleParams(tempParams, "get", url, tempHeaders, self.proxies)
+        if video:
+            requestParams = self.request.handleParams(tempParams, "download", url, tempHeaders, self.proxies)
+        else:
+            requestParams = self.request.handleParams(tempParams, "get", url, tempHeaders, self.proxies)
         waziLog.log("debug", f"({self.name}.{fuName}) 处理完毕，正在修正文件名。")
         fileName = os.path.join(path, self.fileName.toRight(name))
+        if video:
+            requestParams["data"] = fileName
         waziLog.log("debug", f"({self.name}.{fuName}) 文件名修正完成： {fileName}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在请求： {url}")
-        with open(fileName, "wb") as f:
+        if not video:
+            with open(fileName, "wb") as f:
+                try:
+                    temp = self.request.do(requestParams)
+                except:
+                    waziLog.log("error", f"({self.name}.{fuName}) 该文件无法下载！")
+                    return False
+                else:
+                    waziLog.log("debug", f"({self.name}.{fuName}) 正在将数据写入。")
+                    f.write(temp.data)
+                    waziLog.log("debug", f"({self.name}.{fuName}) 数据写入完成。")
+        else:
             try:
-                temp = self.request.do(requestParams)
+                self.request.do(requestParams)
             except:
                 waziLog.log("error", f"({self.name}.{fuName}) 该文件无法下载！")
                 return False
-            else:
-                waziLog.log("debug", f"({self.name}.{fuName}) 正在将数据写入。")
-                f.write(temp.data)
-                waziLog.log("debug", f"({self.name}.{fuName}) 数据写入完成。")
         waziLog.log("info", f"({self.name}.{fuName}) 文件： {fileName}， 完成。")
         return True
     
@@ -1130,7 +1147,7 @@ class waziAsianSister:
         waziLog.log("debug", f"({self.name}.{fuName}) Soup 获取完成，正在从 parseVideo 中获取信息。")
         info = waziAsianSister.parseVideo(self, soup)
         waziLog.log("debug", f"({self.name}.{fuName}) 从 parseVideo 中获取信息完成，正在下载视频。")
-        if waziAsianSister.downloadFile(self, info["url"], info["url"].split("?")[0].split("/")[-1], os.path.join(path, info["title"].strip())):
+        if waziAsianSister.downloadFile(self, info["url"], info["url"].split("?")[0].split("/")[-1], os.path.join(path, info["title"].strip()), True):
             waziLog.log("info", f"({self.name}.{fuName}) 视频下载完成，返回路径。")
             return os.path.join(os.path.join(path, info["title"].strip()), info["url"].split("?")[0].split("/")[-1])
         else:

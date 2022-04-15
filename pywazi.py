@@ -219,11 +219,12 @@ class waziMain:
         return True
 
 """
-Try to import the config file: "./config.json".
+Try to import the global config file & config file: 
+    ./global.json & ./config.json
 """
 try:
-    waziMain.defConfig("./config.json")
     waziMain.globalParamsByFile("./global.json")
+    waziMain.defConfig("./config.json")  
 except:
     pass
 
