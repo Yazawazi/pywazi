@@ -30,6 +30,9 @@ class waziLog:
         saveName: str
             The name of the log file.
             Default: ""
+        
+        cache: list
+            The cache of the log messages.
 
     Methods:
         - Please use help()
@@ -53,6 +56,7 @@ class waziLog:
         self.min = -1
         self.save = False
         self.saveName = ""
+        self.cache = []
         self.createLogsFolder()
         self.setSaveName()
 
@@ -141,6 +145,30 @@ class waziLog:
         """
         self.min = levelNumber
         return self.min
+    
+    def forceSave(self):
+        """
+        waziLog.forceSave(self)
+        *Glowing.*
+
+        Force save the log.
+
+        Parameters:
+            None
+        
+        Return:
+            None
+        
+        Errors:
+            None
+        """
+        if self.save:
+            with open("./logs/" + self.saveName, "a", encoding = "utf-8") as f:
+                texts = ""
+                for text in self.cache:
+                    texts += text + "\n"
+                f.write(texts)
+            self.cache = []
 
     def outputLog(self, text):
         """
@@ -161,8 +189,14 @@ class waziLog:
                 Perhaps there are potential errors.
         """
         if self.save:
-            with open("./logs/" + self.saveName, "a", encoding = "utf-8") as f:
-                f.write(text + "\n")
+            self.cache.append(text)
+            if len(self.cache) > 100:
+                with open("./logs/" + self.saveName, "a", encoding = "utf-8") as f:
+                    texts = ""
+                    for text in self.cache:
+                        texts += text + "\n"
+                    f.write(texts)
+                self.cache = []
 
     def log(self, level, text):
         """

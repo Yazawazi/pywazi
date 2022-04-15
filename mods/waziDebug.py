@@ -4,6 +4,7 @@ mods/waziDebug.py
 class: waziDebug
 """
 
+import os
 import traceback
 import webbrowser
 
@@ -62,6 +63,7 @@ class waziDebug:
             url = "https://stackoverflow.com/search?q=%5Bpython%5D+" + error.split("\n")[-2]
             webbrowser.open(url)
             traceback.print_exc()
+            os._exit(1)
             return
         else:
             return info

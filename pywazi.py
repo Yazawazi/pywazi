@@ -5,7 +5,7 @@ See Readme.md & doc.md for more details.
 爬取网络资源的程序。
 详情请看 Readme.md & doc.md。
 """
-
+import atexit
 from ins.waziInsLog import waziLog
 from ins.waziInsConfig import waziConfig
 from sites.waziNyaa import waziNyaa as Wn
@@ -15,7 +15,7 @@ from sites.waziDanbooru import waziDanbooru as Wdb
 from sites.waziExHentai import waziExHentai as Weh
 from sites.waziAsianSister import waziAsianSister as Was
 
-__VERSION__ = "1.5"
+__VERSION__ = "2.0"
 __AUTHOR__ = ["Acheron-x", "Yazawazi"]
 
 waziNyaa = Wn()
@@ -24,6 +24,46 @@ waziPicAcg = Wpa()
 waziDanbooru = Wdb()
 waziExHentai = Weh()
 waziAsianSister = Was()
+
+atexit.register(waziLog.forceSave)
+
+class waziGet:
+    def __init__(self):
+        self.name = self.__class__.__name__
+    
+    @staticmethod
+    def get(site):
+        """
+        waziGet.get(site)
+        *walk in circles.*
+
+        Get the class by site name.
+
+        Parameters:
+            site: str
+                The site name.
+        
+        Return:
+            Type: class
+            The class by site name.
+        
+        Errors:
+            None
+        """
+        if site == "nyaa":
+            return waziNyaa
+        elif site == "javbus":
+            return waziJavBus
+        elif site == "picacg":
+            return waziPicAcg
+        elif site == "danbooru":
+            return waziDanbooru
+        elif site == "exhentai":
+            return waziExHentai
+        elif site == "asiansister":
+            return waziAsianSister
+        else:
+            return None
 
 class waziMain:
     def __init__(self):
@@ -183,6 +223,7 @@ Try to import the config file: "./config.json".
 """
 try:
     waziMain.defConfig("./config.json")
+    waziMain.globalParamsByFile("./global.json")
 except:
     pass
 

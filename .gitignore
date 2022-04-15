@@ -153,6 +153,7 @@ cython_debug/
 
 # Yazawazi
 config.json
+global.json
 todo.md
 
 test.py

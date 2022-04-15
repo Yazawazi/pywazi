@@ -301,6 +301,35 @@ class waziRequest:
         temp = waziRequest.collectRequest(self, url, "get", None)
         waziLog.log("debug", f"({self.name}.{fuName}) 请求发送完毕，相关数据已返回。")
         return temp
+    
+    def download(self, url, filePath):
+        """
+        waziRequest.download(self, url, filePath)
+        *Fly with me.*
+
+        Use the GET method to download a file in multi-threading.
+
+        Parameters:
+            url: str
+                The url to request.
+            
+            filePath: str
+                The file save path.
+        
+        Return:
+            Type: boolean
+            If success, return True.
+        
+        Errors:
+            None
+        """
+        fuName = waziFun.getFuncName()
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到 URL 信息，准备发起 DOWNLOAD 请求。")
+        waziLog.log("debug", f"({self.name}.{fuName}) URL 信息为： {url}， 保存地址为： {filePath}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 正在发起请求。")
+        temp = waziRequest.collectRequest(self, url, "download", filePath)
+        waziLog.log("debug", f"({self.name}.{fuName}) 请求发送完毕，相关数据已返回。")
+        return temp
 
     def post(self, url, data):
         """
@@ -403,12 +432,13 @@ class waziRequest:
             method: str
                 The method to request.
             
-            data: dict
-                The data to send.
+            data: dict or str
+                The data or string to send.
         
         Return:
-            Type: urllib3.response.HTTPResponse or None
+            Type: urllib3.response.HTTPResponse or None or Object
             The response of the request. If the request failed, return None.
+            If the request is a download request, return the boolean value.
         
         Errors:
             Python:
@@ -440,7 +470,9 @@ class waziRequest:
                 elif method.lower() == "fieldspost":
                     temp = http.request("POST", url, headers = self.headers, fields = data)
                 elif method.lower() == "put":
-                    temp = http.request("PUT", url, body = data, headers=self.headers)
+                    temp = http.request("PUT", url, body = data, headers = self.headers)
+                elif method.lower() == "download":
+                    pass
                 else:
                     temp = None
             except:
@@ -458,6 +490,8 @@ class waziRequest:
                     temp = http.request("POST", url, fields = data)
                 elif method.lower() == "put":
                     temp = http.request("PUT", url, body = data)
+                elif method.lower() == "download":
+                    pass
                 else:
                     temp = None
             except:
@@ -486,7 +520,9 @@ class waziRequest:
                     "useHeaders": bool,
                     "headers": dict,
                     "method": str,
-                    "url": str
+                    "url": str,
+                    "data": object,
+                    "filePath": str
                 }
         
         Return:
@@ -557,6 +593,9 @@ class waziRequest:
             elif params["method"].lower() == "put":
                 waziLog.log("info", f"({self.name}.{fuName}) 检测到 PUT 模式，递交给 PUT 函数处理。")
                 return waziRequest.put(self, params["url"], params["data"])
+            elif params["method"].lower() == "download":
+                waziLog.log("info", f"({self.name}.{fuName}) 检测到下载模式，递交给 DOWNLOAD 函数处理。")
+                return waziRequest.download(self, params["url"], params["filePath"])
             else:
                 waziLog.log("error", f"({self.name}.{fuName}) 未检测到任何请求模式。")
                 return "Sorry, method must be get, post or put. / 对不起，模式一定得是 GET, POST 或者 PUT 呜呜呜。"
