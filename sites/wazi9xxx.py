@@ -1,12 +1,58 @@
 import os
 import re
 import json
+from mods import waziFun
 from bs4 import BeautifulSoup
+from ins.waziInsLog import waziLog
 from mods.waziRequest import waziRequest
 from mods.waziFileName import waziFileName
 
 class wazi9xxx:
+    """
+    wazi9xxx
+    *9 to 5? 0 to 0!*
+
+    A class for crawling https://www.9xxx.net/
+
+    Attributes:
+        baseURL: str
+            The base url of the website.
+            Value: "https://www.9xxx.net/"
+        
+        request: waziRequest
+            The request object.
+        
+        fileName: waziFileName
+            The file name object.
+        
+        headers: dict
+            The headers for the request.
+            Default: 
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                              "Chrome/91.0.4472.164 Safari/537.36"
+            }
+        
+        proxies: dict
+            The proxies for the request.
+             Default: {'proxyAddress': '127.0.0.1', 'proxyPort': '7890'}
+        
+        params: dict
+            A dict of user params for requests. User can set the params in config.json.
+
+    Methods:
+        - Please use help()
+    """
     def __init__(self):
+        """
+        wazi9xxx.__init__(self)
+        *Love It.*
+
+        Initialize this class.
+
+        Parameters:
+            None
+        """
         super(wazi9xxx, self).__init__()
         self.baseURL = "https://www.9xxx.net/"
         self.request = waziRequest()
@@ -23,44 +69,132 @@ class wazi9xxx:
         self.name = self.__class__.__name__
     
     def giveParams(self, params):
+        """
+        wazi9xxx.giveParams(self, params)
+        *Wake up and sleep.*
+
+        Give params to this class. Controled by user.
+        Proxy and headers are controlled by self.params.
+
+        Parameters:
+            params: dict
+                A dict of params, user given.
+        
+        Return:
+            Type: dict
+            The params given.
+        
+        Errors:
+            None
+        """
+        fuName = waziFun.getFuncName()
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到配置信息，正在写入。")
         self.params = params
+        waziLog.log("info", f"({self.name}.{fuName}) 写入完成，目前配置为： {self.params}")
         return self.params
     
     def returnSoup(self, link):
+        """
+        wazi9xxx.returnSoup(self, link)
+        *88 Keys*
+
+        Request a link and return a BeautifulSoup.
+
+        Parameters:
+            link: str
+                A link to request.
+        
+        Return:
+            soup: BeautifulSoup
+                A BeautifulSoup of the requested link.
+                If the request failed, return BeautifulSoup("<html></html>", "lxml")
+        
+        Errors:
+            Python:
+                Perhaps there are potential errors.
+            
+            Logs:
+                Error:
+                    + Cannot get the response.
+        """
+        fuName = waziFun.getFuncName()
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL，正在获得 Soup： {link}")
         tempParams = self.params
         tempParams["useHeaders"] = True
         tempHeaders = self.headers
+        waziLog.log("debug", f"({self.name}.{fuName}) 需要检查 URL 并进行处理。")
+        waziLog.log("debug", f"({self.name}.{fuName}) 正在发起网络请求。")
         requestParams = self.request.handleParams(tempParams, "get", link, tempHeaders, self.proxies)
         try:
             soup = BeautifulSoup(self.request.do(requestParams).data.decode("utf-8"), "lxml")
         except:
+            waziLog.log("error", f"({self.name}.{fuName}) 无法获取，返回无效 Soup。")
             return BeautifulSoup("<html></html>", "lxml")
         else:
+            waziLog.log("info", f"({self.name}.{fuName}) 获取成功，Soup 返回中。")
             return soup
     
     def sendPost(self, link):
+        """
+        wazi9xxx.sendPost(self, link)
+        *What a lovely day.*
+
+        Send a post request with form data.
+
+        Parameters:
+            link: str
+                A link to request.
+        
+        Return:
+            Type: dict
+            The response of the request but in a dict.
+        
+        Errors:
+            Python:
+                Perhaps there are potential errors.
+            
+            Logs:
+                Error:
+                    + Cannot get the response.
+        """
+        fuName = waziFun.getFuncName()
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL，正在请求： {link}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 正在创建临时请求参数。")
         tempParams = self.params
         tempParams["useHeaders"] = True
         tempHeaders = self.headers
+        waziLog.log("debug", f"({self.name}.{fuName}) 正在更新自定义请求头。")
         tempHeaders.update({
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "origin": link.split("/")[0] + "//" + link.split("/")[2],
             "referer": link.replace("/api/source/", "/v/"),
             "x-requested-with": "XMLHttpRequest"
         })
+        waziLog.log("debug", f"({self.name}.{fuName}) 更新完毕： {tempHeaders}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 正在处理参数。")
         requestParams = self.request.handleParams(tempParams, "fieldsPost", link, tempHeaders, self.proxies)
+        waziLog.log("debug", f"({self.name}.{fuName}) 参数处理完毕，正在填写数据。")
         requestParams["data"] = {
             "r": "",
             "d": link.split("/")[2]
         }
+        waziLog.log("debug", f"({self.name}.{fuName}) 数据填写完毕，正在发起请求： {requestParams['data']}")
         try:
-            soup = json.loads(self.request.do(requestParams).data.decode("utf-8"))
+            temp = self.request.do(requestParams)
         except:
+            waziLog.log("error", f"({self.name}.{fuName}) 无法获取，返回空字典。")
             return {}
         else:
-            return soup
+            try:
+                temp = json.loads(temp.data.decode("utf-8"))
+            except:
+                waziLog.log("error", f"({self.name}.{fuName}) 无法解析，返回空字典。")
+                return {}
+            else:
+                waziLog.log("info", f"({self.name}.{fuName}) 获取成功： {temp}")
+                return temp
     
-    def downloadFile(self, url, name, path, video = False, ):
+    def downloadFile(self, url, name, path, video = False):
         isExists = os.path.exists(path)
         if not isExists:
             try:
