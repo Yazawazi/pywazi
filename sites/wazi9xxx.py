@@ -1,12 +1,16 @@
+import os
+import re
 import json
 from bs4 import BeautifulSoup
 from mods.waziRequest import waziRequest
+from mods.waziFileName import waziFileName
 
 class wazi9xxx:
     def __init__(self):
         super(wazi9xxx, self).__init__()
         self.baseURL = "https://www.9xxx.net/"
         self.request = waziRequest()
+        self.fileName = waziFileName()
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                           "Chrome/91.0.4472.164 Safari/537.36"
@@ -55,6 +59,38 @@ class wazi9xxx:
             return {}
         else:
             return soup
+    
+    def downloadFile(self, url, name, path, video = False, ):
+        isExists = os.path.exists(path)
+        if not isExists:
+            try:
+                os.makedirs(path)
+            except:
+                return False
+        tempParams = self.params
+        tempParams["useHeaders"] = True
+        tempHeaders = self.headers
+        if video:
+            requestParams = self.request.handleParams(tempParams, "download", url, tempHeaders, self.proxies)
+        else:
+            requestParams = self.request.handleParams(tempParams, "get", url, tempHeaders, self.proxies)
+        fileName = os.path.join(path, self.fileName.toRight(name))
+        if video:
+            requestParams["data"] = fileName
+        if not video:
+            with open(fileName, "wb") as f:
+                try:
+                    temp = self.request.do(requestParams)
+                except:
+                    return False
+                else:
+                    f.write(temp.data)
+        else:
+            try:
+                self.request.do(requestParams)
+            except:
+                return False
+        return True
     
     def getCommonInfo(self, soup):
         commonInfo = []
@@ -245,6 +281,50 @@ class wazi9xxx:
     def getVideo(self, videoId, name):
         url = f"{self.baseURL}video_{videoId}/{name}/"
         return wazi9xxx.parseVideo(self, wazi9xxx.returnSoup(self, url))
+    
+    def downloadVideo(self, videoId, name, path, label):
+        url = f"{self.baseURL}video_{videoId}/{name}/"
+        video = wazi9xxx.parseVideo(self, wazi9xxx.returnSoup(self, url))
+        poster = video["downloadLinks"]["posterLink"]
+        data = video["downloadLinks"]["data"]
+        cover = re.sub("-\d+x\d+", "", video["cover"])
+        title = video["title"]
+        coverStatus = wazi9xxx.downloadFile(
+            self,
+            cover,
+            self.fileName.toRight(title + "." + cover.split(".")[-1]),
+            os.path.join(path, title)
+        )
+        posterStatus = wazi9xxx.downloadFile(
+            self,
+            poster,
+            self.fileName.toRight(title + "-poster." + poster.split(".")[-1].split("?")[0]),
+            os.path.join(path, title)
+        )
+        if label:
+            for item in data:
+                if item["label"] == label:
+                    videoStatus = wazi9xxx.downloadFile(
+                        self,
+                        item["file"],
+                        self.fileName.toRight(title + "-" + label + "." + item["type"]),
+                        os.path.join(path, title),
+                        True
+                    )
+                    return coverStatus and posterStatus and videoStatus
+            return False
+        else:
+            videoStatuses = []
+            for item in data:
+                videoStatus = wazi9xxx.downloadFile(
+                    self,
+                    item["file"],
+                    self.fileName.toRight(title + "-" + item["label"] + "." + item["type"]),
+                    os.path.join(path, title),
+                    True
+                )
+                videoStatuses.append(videoStatus)
+            return coverStatus and posterStatus and all(videoStatuses)
     
     def getCategory(self, category, page, sort = None):
         if page > 1:

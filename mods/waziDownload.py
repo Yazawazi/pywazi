@@ -112,11 +112,18 @@ class waziDownload:
         """
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取文件大小。")
-        self.total = int(requests.head(
+        head = requests.head(
             self.url,
             headers = self.headers,
             proxies = self.proxies
-        ).headers["Content-Length"])
+        )
+        if head.status_code == 302:
+            head = requests.head(
+                head.headers["Location"],
+                headers = self.headers,
+                proxies = self.proxies
+            )
+        self.total = int(head.headers["Content-Length"])
         waziLog.log("info", f"({self.name}.{fuName}) 文件大小获取完毕： {self.total}")
     
     def download(self, start, end):
