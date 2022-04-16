@@ -9,6 +9,7 @@ import atexit
 from ins.waziInsLog import waziLog
 from ins.waziInsConfig import waziConfig
 from sites.waziNyaa import waziNyaa as Wn
+from sites.wazi9xxx import wazi9xxx as W9
 from sites.waziJavBus import waziJavBus as Wjb
 from sites.waziPicAcg import waziPicAcg as Wpa
 from sites.waziDanbooru import waziDanbooru as Wdb
@@ -19,6 +20,7 @@ __VERSION__ = "2.0"
 __AUTHOR__ = ["Acheron-x", "Yazawazi"]
 
 waziNyaa = Wn()
+wazi9xxx = W9()
 waziJavBus = Wjb()
 waziPicAcg = Wpa()
 waziDanbooru = Wdb()
@@ -62,6 +64,8 @@ class waziGet:
             return waziExHentai
         elif site == "asiansister":
             return waziAsianSister
+        elif site == "9xxx":
+            return wazi9xxx
         else:
             return None
 
@@ -98,6 +102,7 @@ class waziMain:
             None
         """
         waziNyaa.giveParams(params)
+        wazi9xxx.giveParams(params)
         waziJavBus.giveParams(params)
         waziPicAcg.giveParams(params)
         waziDanbooru.giveParams(params)
@@ -134,12 +139,7 @@ class waziMain:
             None
         """
         jsonData = waziConfig.readConfig(filePath)
-        waziNyaa.giveParams(jsonData)
-        waziJavBus.giveParams(jsonData)
-        waziPicAcg.giveParams(jsonData)
-        waziDanbooru.giveParams(jsonData)
-        waziExHentai.giveParams(jsonData)
-        waziAsianSister.giveParams(jsonData)
+        waziMain.globalParams(jsonData)
         return jsonData
 
     @staticmethod
@@ -209,6 +209,9 @@ class waziMain:
             elif i["name"] == "Nyaa":
                 if "params" in i:
                     waziNyaa.giveParams(i["params"])
+            elif i["name"] == "9xxx":
+                if "params" in i:
+                    wazi9xxx.giveParams(i["params"])
             elif i["name"] == "Log":
                 if "save" in i:
                     waziLog.needSave(i["save"])
