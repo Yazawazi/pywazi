@@ -1,6 +1,7 @@
 import os
 import re
 import json
+from unicodedata import category
 from mods import waziFun
 from bs4 import BeautifulSoup
 from ins.waziInsLog import waziLog
@@ -153,6 +154,127 @@ class waziAsianToLick:
             })
         return urlsList
     
+    def parseCategoriesAndTags(self, soup):
+        info = soup.find("div", {
+            "id": "container"
+        }).find_all("a")
+        categories = []
+        tags = []
+        for i in info:
+            infoDict = {
+                "url": i.get("href"),
+                "id": i.get("href").strip().split("/")[3].split("-")[1],
+                "title": i.get("href").strip().split("/")[-1],
+                "img": i.find("img").get("src"),
+                "pageNum": int(i.find("div", {
+                    "class": "contar_imagens"
+                }).text.strip()),
+                "hashTag": i.find("span", {
+                    "class": "titulo_tag"
+                }).text.strip()
+            }
+            if "category" in i.get("href"):
+                categories.append(infoDict)
+            else:
+                tags.append(infoDict)
+        return categories, tags
+    
+    def parsePost(self, soup):
+        article = soup.find("article")
+        metadata = article.find("div", {
+            "id": "metadata_qrcode"
+        }).find_all("span")
+        imgDivs = article.find_all("div", {
+            "class": "gallery_img"
+        })
+        videoElements = article.find_all("video")
+        infos = []
+        for i in metadata:
+            if i.b.text.strip() == "描述：":
+                infos.append({
+                    "key": "description",
+                    "value": i.text.strip().replace("描述：", "").strip()
+                })
+            elif i.b.text.strip() == "创立日期：":
+                infos.append({
+                    "key": "createDate",
+                    "value": i.text.strip().replace("创立日期：", "").strip()
+                })
+            elif i.b.text.strip() == "Creation date:":
+                infos.append({
+                    "key": "createDate",
+                    "value": i.text.strip().replace("Creation date:", "").strip()
+                })
+            elif i.b.text.strip() == "Gallery pictures:":
+                infos.append({
+                    "key": "gallery",
+                    "value": int(i.text.strip().replace("Gallery pictures:", "").strip().replace("pics", "").strip())
+                })
+            elif i.b.text.strip() == "Photos size:":
+                infos.append({
+                    "key": "photosSize",
+                    "value": i.text.strip().replace("Photos size:", "").strip()
+                })
+            elif i.b.text.strip() == "Album size:":
+                infos.append({
+                    "key": "albumSize",
+                    "value": i.text.strip().replace("Album size:", "").strip()
+                })
+            elif i.b.text.strip() == "下载:":
+                infos.append({
+                    "key": "downloadLink",
+                    "value": i.a.get("href")
+                })
+            else:
+                infos.append({
+                    "key": i.b.text.replace("：", "").replace(":", "").strip(),
+                    "value": i.text.strip().replace(i.b.text, "").strip()
+                })
+        imgs = []
+        for i in imgDivs:
+            imgs.append({
+                "org": i.attrs["data-src"],
+                "thumb": i.find("img").get("src"),
+            })
+        videos = []
+        for i in videoElements:
+            videos.append({
+                "poster": i.get("poster"),
+                "src": i.find("source").get("src"),
+            })
+        category = {}
+        tags = []
+        categoryAndTags = article.find("div", {
+            "id": "categoria_tags_post"
+        }).find_all("a")
+        for i in categoryAndTags:
+            info = {
+                "url": i.get("href"),
+                "id": i.get("href").strip().split("/")[3].split("-")[1],
+                "title": i.get("href").strip().split("/")[-1],
+                "name": i.text.strip()
+            }
+            if "category" in i.get("href"):
+                category = info
+            else:
+                tags.append(info)
+        script = article.find("script")
+        likeNumber = int(script.text.strip().split("var likes = ")[1].split(";")[0])
+        unLikeNumber = int(script.text.strip().split("var unlikes = ")[1].split(";")[0])
+        post = {
+            "title": article.find("h1").text.strip(),
+            "info": infos,
+            "imgs": imgs,
+            "videos": videos,
+            "imgsNum": len(imgs),
+            "videosNum": len(videos),
+            "like": likeNumber,
+            "unLike": unLikeNumber,
+            "category": category,
+            "tags": tags,
+        }
+        return post
+        
     def getAjaxPosts(self, soup):
         posts = soup.find_all("a")
         if not posts:
@@ -165,7 +287,7 @@ class waziAsianToLick:
             spans = baseTt.find_all("span")
             tags = []
             if spans:
-                for span in span:
+                for span in spans:
                     if "tt_tag" in span.get("class")[0]:
                         tags.append({
                             "tagClass": span.get("class")[0],
@@ -175,10 +297,10 @@ class waziAsianToLick:
                 "url": post.get("href"),
                 "hashId": post.get("id"),
                 "cover": post.find("div", {
-                    "class": "background_miniature"
+                    "class": "background_miniatura"
                 }).find("img").get("src"),
                 "alt": post.find("div", {
-                    "class": "background_miniature"
+                    "class": "background_miniatura"
                 }).find("img").get("alt").strip(),
                 "pageNum": int(post.find("div", {
                     "class": "contar_imagens"
@@ -204,11 +326,97 @@ class waziAsianToLick:
         url = f"{self.baseURL}ajax/buscar_posts.php?post={post}&cat={cat}&tag={tag}&search={search}&page={page}&index={index}&ver={ver}"
         return waziAsianToLick.getAjaxPosts(self, waziAsianToLick.returnSoup(self, url, False))
     
-    def getPost(self, postId, name):
-        pass
+    def getPage(self, page):
+        return waziAsianToLick.get(self, "", "", "", "", page, "")
     
-    def downloadPostByNative(self, postId, name, path, key = "org"):
+    def getPostRecommendsByPost(self, postId, name, page):
+        url = f"{self.baseURL}post-{postId}/{name}"
+        info = waziAsianToLick.parsePost(self, waziAsianToLick.returnSoup(self, url, False))
+        tags = ","
+        for i in info["tags"]:
+            tags += i["id"] + ","
+        tags = tags[:-1]
+        return waziAsianToLick.get(
+            self,
+            postId,
+            info["category"]["id"],
+            tags,
+            "",
+            "",
+            page,
+            ""
+        )
+    
+    def getPostRecommends(self, post, cat, tag, page):
+        return waziAsianToLick.get(
+            self,
+            post,
+            cat,
+            tag,
+            "",
+            "",
+            page,
+            ""
+        )
+    
+    def getCategory(self, cat, page):
+        return waziAsianToLick.get(
+            self,
+            "",
+            cat,
+            "",
+            "",
+            "",
+            page,
+            ""
+        )
+    
+    def getTag(self, tag, page):
+        return waziAsianToLick.get(
+            self,
+            "",
+            "",
+            tag,
+            "",
+            "",
+            page,
+            ""
+        )
+    
+    def getNews(self, page):
+        return waziAsianToLick.get(
+            self,
+            "",
+            "",
+            "",
+            "",
+            "news",
+            page,
+            ""
+        )
+    
+    def search(self, keyword, page):
+        return waziAsianToLick.get(
+            self,
+            "",
+            "",
+            "",
+            keyword,
+            "",
+            page,
+            ""
+        )
+    
+    def getCategoriesAndTags(self):
+        url = f"{self.baseURL}page/categories"
+        return waziAsianToLick.parseCategoriesAndTags(self, waziAsianToLick.returnSoup(self, url, False))
+    
+    def getPost(self, postId, name):
+        url = f"{self.baseURL}post-{postId}/{name}"
+        return waziAsianToLick.parsePost(self, waziAsianToLick.returnSoup(self, url, False))
+    
+    def downloadPostByNative(self, postId, name, path, key = "org", video = False):
         pass
 
-    def downloadPost(self, postId, name, path):
+    def downloadPost(self, postId, path):
         pass
