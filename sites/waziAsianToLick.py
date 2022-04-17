@@ -1,9 +1,8 @@
 import os
 import re
-import json
-from unicodedata import category
 from mods import waziFun
 from bs4 import BeautifulSoup
+from urllib.parse import quote
 from ins.waziInsLog import waziLog
 from mods.waziRequest import waziRequest
 from mods.waziFileName import waziFileName
@@ -94,9 +93,9 @@ class waziAsianToLick:
         waziLog.log("info", f"({self.name}.{fuName}) 写入完成，目前配置为： {self.params}")
         return self.params
     
-    def returnSoup(self, link, xml):
+    def returnSoup(self, link, xml, soupOff = False, headersOff = False):
         """
-        waziAsianToLick.returnSoup(self, link, xml)
+        waziAsianToLick.returnSoup(self, link, xml, soupOff = False, headersOff = False)
         *Copy from waziNyaa*
 
         Request a link and return a BeautifulSoup.
@@ -107,11 +106,19 @@ class waziAsianToLick:
 
             xml: bool
                 Whether the link is xml or not.
+            
+            soupOff: bool
+                Whether to return a BeautifulSoup or not.
+                Default: False
+            
+            headersOff: bool
+                Whether to turn off the headers or not.
+                Default: False
         
         Return:
-            soup: BeautifulSoup
-                A BeautifulSoup of the requested link.
-                If the request failed, return BeautifulSoup("<html></html>", "lxml")
+            Type: BeautifulSoup or str
+            A BeautifulSoup of the requested link or the requested link.
+            If the request failed, return BeautifulSoup("<html></html>", "lxml")
         
         Errors:
             Python:
@@ -123,8 +130,12 @@ class waziAsianToLick:
         """
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL，正在获得 Soup： {link}")
-        tempParams = self.params
-        tempParams["useHeaders"] = True
+        if not headersOff:
+            tempParams = self.params
+            tempParams["useHeaders"] = True
+        else:
+            tempParams = self.params
+            tempParams["useHeaders"] = False
         tempHeaders = self.headers
         waziLog.log("debug", f"({self.name}.{fuName}) 需要检查 URL 并进行处理。")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在发起网络请求。")
@@ -133,13 +144,103 @@ class waziAsianToLick:
             if xml:
                 soup = BeautifulSoup(self.request.do(requestParams).data.decode("utf-8"), "xml")
             else:
-                soup = BeautifulSoup(self.request.do(requestParams).data.decode("utf-8"), "lxml")
+                if soupOff:
+                    soup = self.request.do(requestParams).data.decode("utf-8")
+                else:
+                    soup = BeautifulSoup(self.request.do(requestParams).data.decode("utf-8"), "lxml")
         except:
             waziLog.log("error", f"({self.name}.{fuName}) 无法获取，返回无效 Soup。")
             return BeautifulSoup("<html></html>", "lxml")
         else:
             waziLog.log("info", f"({self.name}.{fuName}) 获取成功，Soup 返回中。")
             return soup
+    
+    def downloadFile(self, url, name, path, video = False):
+        """
+        waziAsianToLick.downloadFile(self, url, name, path, video = False)
+        *Copy again.*
+
+        Download a file.
+
+        Parameters:
+            url: str
+                A link to download.
+            
+            name: str
+                The name of the file.
+            
+            path: str
+                The path to save the file.
+            
+            video: bool
+                Whether the file is a video.
+                If True, will use waziDownload to download the video.
+                Default: False
+            
+        Return:
+            Type: bool
+            If the download is successful, return True, else return False.
+        
+        Errors:
+            Python:
+                Perhaps there are potential errors.
+                (Cannot save the file may cause the program to crash.)
+            
+            Logs:
+                Error:
+                    + Cannot get the response.
+                    + Cannot create the path.
+        """
+        fuName = waziFun.getFuncName()
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到 URL，文件名和路径，正在准备下载。")
+        waziLog.log("debug", f"({self.name}.{fuName}) URL： {url}， 文件名： {name}， 路径： {path}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取路径是否存在。")
+        isExists = os.path.exists(path)
+        waziLog.log("debug", f"({self.name}.{fuName}) 路径是否存在： {isExists}")
+        if not isExists:
+            waziLog.log("debug", f"({self.name}.{fuName}) 检测到路径不存在，准备创建。")
+            try:
+                os.makedirs(path)
+            except:
+                waziLog.log("error", f"({self.name}.{fuName}) 创建失败。")
+                return False
+            else:
+                waziLog.log("debug", f"({self.name}.{fuName}) 成功创建，继续执行。")
+        waziLog.log("debug", f"({self.name}.{fuName}) 正在合成请求参数。")
+        tempParams = self.params
+        tempParams["useHeaders"] = True
+        tempHeaders = self.headers
+        waziLog.log("debug", f"({self.name}.{fuName}) 合成完毕： {tempParams}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 正在处理请求参数。")
+        if video:
+            requestParams = self.request.handleParams(tempParams, "download", url, tempHeaders, self.proxies)
+        else:
+            requestParams = self.request.handleParams(tempParams, "get", url, tempHeaders, self.proxies)
+        waziLog.log("debug", f"({self.name}.{fuName}) 处理完毕，正在修正文件名。")
+        fileName = os.path.join(path, self.fileName.toRight(name))
+        if video:
+            requestParams["data"] = fileName
+        waziLog.log("debug", f"({self.name}.{fuName}) 文件名修正完成： {fileName}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 正在请求： {url}")
+        if not video:
+            with open(fileName, "wb") as f:
+                try:
+                    temp = self.request.do(requestParams)
+                except:
+                    waziLog.log("error", f"({self.name}.{fuName}) 该文件无法下载！")
+                    return False
+                else:
+                    waziLog.log("debug", f"({self.name}.{fuName}) 正在将数据写入。")
+                    f.write(temp.data)
+                    waziLog.log("debug", f"({self.name}.{fuName}) 数据写入完成。")
+        else:
+            try:
+                self.request.do(requestParams)
+            except:
+                waziLog.log("error", f"({self.name}.{fuName}) 该文件无法下载！")
+                return False
+        waziLog.log("info", f"({self.name}.{fuName}) 文件： {fileName}， 完成。")
+        return True
     
     def parseXML(self, soup):
         urls = soup.find("urlset").find_all("url")
@@ -157,7 +258,12 @@ class waziAsianToLick:
     def parseCategoriesAndTags(self, soup):
         info = soup.find("div", {
             "id": "container"
-        }).find_all("a")
+        })
+        if not info:
+            return [], []
+        info = info.find_all("a")
+        if not info:
+            return [], []
         categories = []
         tags = []
         for i in info:
@@ -181,6 +287,8 @@ class waziAsianToLick:
     
     def parsePost(self, soup):
         article = soup.find("article")
+        if not article:
+            return {}
         metadata = article.find("div", {
             "id": "metadata_qrcode"
         }).find_all("span")
@@ -188,6 +296,8 @@ class waziAsianToLick:
             "class": "gallery_img"
         })
         videoElements = article.find_all("video")
+        if not metadata or not imgDivs or not videoElements:
+            return {}
         infos = []
         for i in metadata:
             if i.b.text.strip() == "描述：":
@@ -310,6 +420,19 @@ class waziAsianToLick:
             })
         return postsList
     
+    def getTrueDownloadURL(self, soup):
+        downloadPost = soup.find("span", {
+            "id": "download_post"
+        })
+        if not downloadPost:
+            return ""
+        postId = downloadPost.get("post_id")
+        postName = downloadPost.get("post_name")
+        dir = downloadPost.get("dir")
+        url = f"{self.baseURL}ajax/download_post.php?ver=1&dir=/{dir}&post_id={postId}&post_name={quote(postName)}"
+        downloadURL = waziAsianToLick.returnSoup(self, url, False, True, True)
+        return downloadURL
+    
     def getSiteMapPosts(self):
         url = f"{self.baseURL}sitemap/post.xml"
         return waziAsianToLick.parseXML(self, waziAsianToLick.returnSoup(self, url, True))
@@ -415,8 +538,74 @@ class waziAsianToLick:
         url = f"{self.baseURL}post-{postId}/{name}"
         return waziAsianToLick.parsePost(self, waziAsianToLick.returnSoup(self, url, False))
     
-    def downloadPostByNative(self, postId, name, path, key = "org", video = False):
-        pass
+    def downloadPostByNative(self, postId, name, path, key = "org", video = True):
+        info = waziAsianToLick.getPost(self, postId, name)
+        title = info["title"]
+        if not info:
+            return False
+        downloadFiles = []
+        cannotDownloadFiles = []
+        for i in info["imgs"]:
+            if (waziAsianToLick.downloadFile(
+                self,
+                i[key],
+                self.fileName.toRight(i[key].split("/")[-1]),
+                os.path.join(path, self.fileName.toRight(title))
+            )):
+                downloadFiles.append(
+                    os.path.join(
+                        os.path.join(path, self.fileName.toRight(title)),
+                        self.fileName.toRight(i[key].split("/")[-1])
+                    )
+                )
+            else:
+                cannotDownloadFiles.append(i[key])
+        if video:
+            for i in info["videos"]:
+                if (waziAsianToLick.downloadFile(
+                    self,
+                    i["src"],
+                    self.fileName.toRight(i["src"].split("/")[-1]),
+                    os.path.join(path, self.fileName.toRight(title)),
+                    True
+                )):
+                    downloadFiles.append(
+                        os.path.join(
+                            os.path.join(path, self.fileName.toRight(title)),
+                            self.fileName.toRight(i["src"].split("/")[-1])
+                        )
+                    )
+                else:
+                    cannotDownloadFiles.append(i["src"])
+                if (waziAsianToLick.downloadFile(
+                    self,
+                    i["poster"],
+                    self.fileName.toRight(i["poster"].split("/")[-1]),
+                    os.path.join(path, self.fileName.toRight(title))
+                )):
+                    downloadFiles.append(
+                        os.path.join(
+                            os.path.join(path, self.fileName.toRight(title)),
+                            self.fileName.toRight(i["poster"].split("/")[-1])
+                        )
+                    )
+                else:
+                    cannotDownloadFiles.append(i["poster"])
+        return downloadFiles, cannotDownloadFiles
+
+    def getPostDownloadURL(self, postId):
+        url = f"{self.baseURL}download-{postId}/download"
+        return waziAsianToLick.getTrueDownloadURL(self, waziAsianToLick.returnSoup(self, url, False))
 
     def downloadPost(self, postId, path):
-        pass
+        url = f"{self.baseURL}download-{postId}/download"
+        soup = waziAsianToLick.returnSoup(self, url, False)
+        title = soup.find("h1").text.strip()
+        link = waziAsianToLick.getTrueDownloadURL(self, soup)
+        return waziAsianToLick.downloadFile(
+            self,
+            link,
+            self.fileName.toRight(link.split("/")[-1]),
+            os.path.join(path, self.fileName.toRight(title)),
+            True
+        )

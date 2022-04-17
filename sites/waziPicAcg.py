@@ -6,7 +6,6 @@ class: waziPicAcg
 
 import os
 import json
-from re import T
 import uuid
 import base64
 from mods import waziFun

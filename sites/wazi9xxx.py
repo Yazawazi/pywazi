@@ -1121,14 +1121,14 @@ class wazi9xxx:
             self,
             cover,
             self.fileName.toRight(title + "." + cover.split(".")[-1]),
-            os.path.join(path, title)
+            os.path.join(path, self.fileName.toRight(title))
         )
         waziLog.log("debug", f"({self.name}.{fuName}) 正在下载海报。")
         posterStatus = wazi9xxx.downloadFile(
             self,
             poster,
             self.fileName.toRight(title + "-poster." + poster.split(".")[-1].split("?")[0]),
-            os.path.join(path, title)
+            os.path.join(path, self.fileName.toRight(title))
         )
         waziLog.log("debug", f"({self.name}.{fuName}) 正在下载视频。")
         if label:
@@ -1140,7 +1140,7 @@ class wazi9xxx:
                         self,
                         item["file"],
                         self.fileName.toRight(title + "-" + label + "." + item["type"]),
-                        os.path.join(path, title),
+                        os.path.join(path, self.fileName.toRight(title)),
                         True
                     )
                     waziLog.log("info", f"({self.name}.{fuName}) 下载情况如下： {coverStatus}， {posterStatus}， {videoStatus}。")
@@ -1156,7 +1156,7 @@ class wazi9xxx:
                     self,
                     item["file"],
                     self.fileName.toRight(title + "-" + item["label"] + "." + item["type"]),
-                    os.path.join(path, title),
+                    os.path.join(path, self.fileName.toRight(title)),
                     True
                 )
                 videoStatuses.append(videoStatus)
