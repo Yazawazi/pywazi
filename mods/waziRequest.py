@@ -84,7 +84,7 @@ class waziRequest:
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 收到线程数量信息，正在写入配置。")
         self.downloadClass.changeThreadsNumber(tn)
-        waziLog.log("info", f"({self.name}.{fuName}) 写入完成，目前配置为： {self.downloadClass.getThreadsNumber()}")
+        waziLog.log("info", f"({self.name}.{fuName}) 写入完成，目前配置为： {int(tn)}")
         return int(tn)
 
     def useProxies(self, isUse):
