@@ -15,8 +15,9 @@ from sites.waziPicAcg import waziPicAcg as Wpa
 from sites.waziDanbooru import waziDanbooru as Wdb
 from sites.waziExHentai import waziExHentai as Weh
 from sites.waziAsianSister import waziAsianSister as Was
+from sites.waziAsianToLick import waziAsianToLick as Watl
 
-__VERSION__ = "2.0"
+__VERSION__ = "2.5 Dev"
 __AUTHOR__ = ["Acheron-x", "Yazawazi"]
 
 waziNyaa = Wn()
@@ -26,6 +27,7 @@ waziPicAcg = Wpa()
 waziDanbooru = Wdb()
 waziExHentai = Weh()
 waziAsianSister = Was()
+waziAsianToLick = Watl()
 
 atexit.register(waziLog.forceSave)
 
@@ -47,20 +49,22 @@ def waziGet(site):
     Errors:
         None
     """
-    if site == "nyaa":
+    if site.lower() in ["nyaa", "sukebei", "nyaa.si", "sukebei.nyaa.si"]:
         return waziNyaa
-    elif site == "javbus":
+    elif site.lower() in ["javbus", "javbus.com", "javbus.red", "jb", "jab"]:
         return waziJavBus
-    elif site == "picacg":
+    elif site.lower() in ["picacg", "pica", "pic", "pic-acg", "bika", "pa", "bk"]:
         return waziPicAcg
-    elif site == "danbooru":
+    elif site.lower() in ["danbooru", "booru"]:
         return waziDanbooru
-    elif site == "exhentai":
+    elif site.lower() in ["exhentai", "ex", "exh", "ehentai", "eh", "e-hentai", "exhentai.org", "e-hentai.org"]:
         return waziExHentai
-    elif site == "asiansister":
+    elif site.lower() in ["asiansister", "as", "asiansister.com", "www.asiansister.com"]:
         return waziAsianSister
-    elif site == "9xxx":
+    elif site.lower() in ["9xxx", "www.9xxx.net", "9xxx.net"]:
         return wazi9xxx
+    elif site.lower() in ["asiantolick", "atl", "asiantolick.com"]:
+        return waziAsianToLick
     else:
         return None
 
@@ -103,6 +107,7 @@ class waziMain:
         waziDanbooru.giveParams(params)
         waziExHentai.giveParams(params)
         waziAsianSister.giveParams(params)
+        waziAsianToLick.giveParams(params)
         return params
 
     @staticmethod
@@ -201,6 +206,9 @@ class waziMain:
             elif i["name"] == "AsianSister":
                 if "params" in i:
                     waziAsianSister.giveParams(i["params"])
+            elif i["name"] == "AsianToLick":
+                if "params" in i:
+                    waziAsianToLick.giveParams(i["params"])
             elif i["name"] == "Nyaa":
                 if "params" in i:
                     waziNyaa.giveParams(i["params"])
