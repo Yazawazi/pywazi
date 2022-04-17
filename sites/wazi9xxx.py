@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import copy
 from mods import waziFun
 from bs4 import BeautifulSoup
 from ins.waziInsLog import waziLog
@@ -121,7 +122,7 @@ class wazi9xxx:
         waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL，正在获得 Soup： {link}")
         tempParams = self.params
         tempParams["useHeaders"] = True
-        tempHeaders = self.headers
+        tempHeaders = copy.deepcopy(self.headers)
         waziLog.log("debug", f"({self.name}.{fuName}) 需要检查 URL 并进行处理。")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在发起网络请求。")
         requestParams = self.request.handleParams(tempParams, "get", link, tempHeaders, self.proxies)

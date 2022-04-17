@@ -10,6 +10,7 @@ class: waziExHentai
 import os
 import re
 import json
+import copy
 import urllib.parse
 import urllib.request
 from mods import waziFun
@@ -1770,7 +1771,7 @@ class waziExHentai:
         waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL，正在获得 Soup： {link}")
         tempParams = self.params
         tempParams["useHeaders"] = True
-        tempHeaders = self.headers
+        tempHeaders = copy.deepcopy(self.headers)
         waziLog.log("debug", f"({self.name}.{fuName}) 需要检查 URL 并进行处理。")
         if self.jumpWarn:
             waziLog.log("debug", f"({self.name}.{fuName}) 需要跳过画廊警告，")
@@ -2566,7 +2567,7 @@ class waziExHentai:
         waziLog.log("debug", f"({self.name}.{fuName}) 正在修改请求参数和 Header。")
         tempParams = self.params
         tempParams["useHeaders"] = True
-        tempHeaders = self.headers
+        tempHeaders = copy.deepcopy(self.headers)
         tempHeaders["Content-Type"] = "application/json"
         waziLog.log("debug", f"({self.name}.{fuName}) 请求参数和 Header 修改完毕。")
         i = 0
@@ -2665,7 +2666,7 @@ class waziExHentai:
         waziLog.log("debug", f"({self.name}.{fuName}) 正在修改请求参数和 Header。")
         tempParams = self.params
         tempParams["useHeaders"] = True
-        tempHeaders = self.headers
+        tempHeaders = copy.deepcopy(self.headers)
         tempHeaders["Content-Type"] = "application/json"
         waziLog.log("debug", f"({self.name}.{fuName}) 请求参数和 Header 修改完毕。")
         title = ""
