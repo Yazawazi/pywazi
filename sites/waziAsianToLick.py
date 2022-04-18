@@ -850,7 +850,16 @@ class waziAsianToLick:
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 收到页码信息： {page}")
         waziLog.log("debug", f"({self.name}.{fuName}) 转移至 get 接口。")
-        return waziAsianToLick.get(self, "", "", "", "", page, "")
+        return waziAsianToLick.get(
+            self,
+            "",
+            "",
+            "",
+            "",
+            "",
+            page,
+            ""
+        )
     
     def getPostRecommendsByPost(self, postId, name, page):
         """
