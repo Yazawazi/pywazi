@@ -2439,9 +2439,9 @@ class waziExHentai:
             waziLog.log("info", f"({self.name}.{fuName}) 全部数据已取得： {thumbnails}")
             return thumbnails
 
-    def getTitle(self, link, params):
+    def getTitle(self, link, japaneseNeed):
         """
-        waziExHentai.getTitle(self, link, params)
+        waziExHentai.getTitle(self, link, japaneseNeed)
         *Will disappear.*
 
         Get the gallery title.
@@ -2450,12 +2450,8 @@ class waziExHentai:
             link: str
                 A link to request. Like https://exhentai.org/g/2011308/8263590d02/
             
-            params: dict
-                A dict of parameters.
-                Like:
-                {
-                    "japanese": bool,               # Whether to get japanese title.
-                }
+            japaneseNeed: bool
+                Whether to return the title in Japanese.
         
         Return:
             Type: str
@@ -2465,9 +2461,9 @@ class waziExHentai:
                 Perhaps there are potential errors.
         """
         fuName = waziFun.getFuncName()
-        waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL 和参数，正在获得其标题。")
-        waziLog.log("debug", f"({self.name}.{fuName}) URL： {link}， 参数： {params}")
-        if params["japanese"]:
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL 和日文需求，正在获得其标题。")
+        waziLog.log("debug", f"({self.name}.{fuName}) URL： {link}， 日文需求： {japaneseNeed}")
+        if japaneseNeed:
             waziLog.log("debug", f"({self.name}.{fuName}) 需要日语等其他语种标题，通过 getInfo 获取。")
             title = waziExHentai.getInfo(self, link)["jTitle"]
         else:
@@ -2478,9 +2474,9 @@ class waziExHentai:
         waziLog.log("info", f"({self.name}.{fuName}) 标题为： {title}")
         return title
 
-    def createFolder(self, link, params):
+    def createFolder(self, link, japaneseNeed, path):
         """
-        waziExHentai.createFolder(self, link, params)
+        waziExHentai.createFolder(self, link, japaneseNeed, path)
         *Active.*
 
         Create a folder.
@@ -2489,13 +2485,11 @@ class waziExHentai:
             link: str
                 A link to request. Like https://exhentai.org/g/2011308/8263590d02/
             
-            params: dict
-                A dict of parameters.
-                Like:
-                {
-                    "japanese": bool,               # Whether to get japanese title.
-                    "path": str,                    # Path to save.
-                }
+            japaneseNeed: bool
+                Whether to return the title in Japanese.
+            
+            path: str
+                The path to create the folder.
         
         Return:
             None
@@ -2505,14 +2499,14 @@ class waziExHentai:
                 Perhaps there are potential errors.
         """
         fuName = waziFun.getFuncName()
-        waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL 和参数，正在创建文件夹。")
-        waziLog.log("debug", f"({self.name}.{fuName}) URL： {link}， 参数： {params}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL， 日文需求和路径，正在创建文件夹。")
+        waziLog.log("debug", f"({self.name}.{fuName}) URL： {link}， 日文需求： {japaneseNeed}， 路径： {path}")
         waziLog.log("debug", f"({self.name}.{fuName}) 通过 getTitle 获得标题。")
-        title = waziExHentai.getTitle(self, link, params)
+        title = waziExHentai.getTitle(self, link, japaneseNeed)
         waziLog.log("debug", f"({self.name}.{fuName}) 获取完成： {title}")
-        isExists = os.path.exists(os.path.join(params["path"], self.fileName.toRight(title)))
+        isExists = os.path.exists(os.path.join(path, self.fileName.toRight(title)))
         if not isExists:
-            os.makedirs(os.path.join(params["path"], self.fileName.toRight(title)))
+            os.makedirs(os.path.join(path, self.fileName.toRight(title)))
         waziLog.log("info", f"({self.name}.{fuName}) 文件夹创建完成。")
     
     def yieldGetMPVImages(self, link):
@@ -2593,9 +2587,9 @@ class waziExHentai:
             waziLog.log("debug", f"({self.name}.{fuName}) 图像数据： {mpvList}")
             yield mpvList
 
-    def getMPVImages(self, link, method, params):
+    def getMPVImages(self, link, method, japaneseNeed, path):
         """
-        waziExHentai.getMPVImages(self, link, method, params)
+        waziExHentai.getMPVImages(self, link, method, japaneseNeed, path)
         *Bliss.*
 
         Get all images from MPV. May take a long time.
@@ -2610,13 +2604,11 @@ class waziExHentai:
                 get - get the images url.
                 download - download the images.
             
-            params: dict
-                The params to get images.
-                Like:
-                {
-                    "japanese": bool,               # Whether to get japanese title.
-                    "path": str,                    # Path to save.
-                }
+            japaneseNeed: bool
+                Whether to return the title in Japanese.
+            
+            path: str
+                The path to create the folder.
         
         Return:
             get:
@@ -2637,8 +2629,8 @@ class waziExHentai:
                 Perhaps there are potential errors.
         """
         fuName = waziFun.getFuncName()
-        waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL, 方式和参数，正在获取 MPV 图像列表。")
-        waziLog.log("debug", f"({self.name}.{fuName}) URL： {link}， 方式： {method}， 参数： {params}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL, 方式，日文标题需求和路径，正在获取 MPV 图像列表。")
+        waziLog.log("debug", f"({self.name}.{fuName}) URL： {link}， 方式： {method}， 日文标题需求： {japaneseNeed}， 路径： {path}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在组合 URL。")
         mpvUrl = self.urls["mpv"] + link.split("/")[4] + "/" + link.split("/")[5]
         waziLog.log("debug", f"({self.name}.{fuName}) 组合完成： {mpvUrl}")
@@ -2672,9 +2664,9 @@ class waziExHentai:
         title = ""
         if method == "download":
             waziLog.log("debug", f"({self.name}.{fuName}) 检测到下载请求，正在通过 createFolder 创建文件夹。")
-            waziExHentai.createFolder(self, link, params)
+            waziExHentai.createFolder(self, link, japaneseNeed, path)
             waziLog.log("debug", f"({self.name}.{fuName}) 文件夹创建完成，正在根据参数通过 getTitle 获取标题。")
-            title = waziExHentai.getTitle(self, link, params)
+            title = waziExHentai.getTitle(self, link, japaneseNeed)
             waziLog.log("debug", f"({self.name}.{fuName}) 标题获取完成： {title}")
         i = 0
         waziLog.log("debug", f"({self.name}.{fuName}) 进入循环遍历。")
@@ -2706,17 +2698,17 @@ class waziExHentai:
                 waziLog.log("debug", f"({self.name}.{fuName}) 请求参数处理完毕： {requestParams}， 准备发起请求。")
                 fileData = self.request.do(requestParams).data
                 waziLog.log("debug", f"({self.name}.{fuName}) 请求发起完毕，准备写入。")
-                with open(os.path.join(params["path"], title, dic["n"]), "wb") as f:
+                with open(os.path.join(path, title, dic["n"]), "wb") as f:
                     f.write(fileData)
                 waziLog.log("debug", f"({self.name}.{fuName}) 写入数据完成。")
-                mpvLists.append(os.path.join(params["path"], title, dic["n"]))
+                mpvLists.append(os.path.join(path, title, dic["n"]))
                 waziLog.log("debug", f"({self.name}.{fuName}) 文件路径已追加。")
         waziLog.log("info", f"({self.name}.{fuName}) 数据： {mpvLists}，结果返回。")
         return mpvLists
 
-    def getImages(self, soup, method, title, params):
+    def getImages(self, soup, method, title, path):
         """
-        waziExHentai.getImages(soup, method, title, params)
+        waziExHentai.getImages(soup, method, title, path)
         *Fireworks.*
 
         Get images from soup.
@@ -2731,13 +2723,8 @@ class waziExHentai:
             title: str
                 Title of the page.
             
-            params: dict
-                Parameters.
-                Like:
-                {
-                    "japanese": bool,               # Whether to get japanese title.
-                    "path": str,                    # Path to save.
-                }
+            path: str
+                The path to create the folder.
             
         Return:
             get:
@@ -2753,8 +2740,8 @@ class waziExHentai:
                 Perhaps there are potential errors.
         """
         fuName = waziFun.getFuncName()
-        waziLog.log("debug", f"({self.name}.{fuName}) 收到 Soup， 方式和参数，标题，正在获取图像列表。")
-        waziLog.log("debug", f"({self.name}.{fuName}) 方式： {method}， 参数： {params}，标题： {title}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到 Soup， 方式， 标题， 日文标题需求和路径，正在获取图像列表。")
+        waziLog.log("debug", f"({self.name}.{fuName}) 方式： {method}， 标题： {title}， 路径： {path}")
         images = []
         waziLog.log("debug", f"({self.name}.{fuName}) 正在修改请求 Header。")
         tempParams = self.params
@@ -2785,10 +2772,10 @@ class waziExHentai:
                     images.append(src)
                 else:
                     waziLog.log("debug", f"({self.name}.{fuName}) 请求发起完毕，准备写入。")
-                    with open(os.path.join(params["path"], self.fileName.toRight(title), src.split("/")[-1]), "wb") as f:
+                    with open(os.path.join(path, self.fileName.toRight(title), src.split("/")[-1]), "wb") as f:
                         f.write(fileData)
                     waziLog.log("debug", f"({self.name}.{fuName}) 写入数据完成。")
-                    images.append(os.path.join(params["path"], title, src.split("/")[-1]))
+                    images.append(os.path.join(path, title, src.split("/")[-1]))
                     waziLog.log("debug", f"({self.name}.{fuName}) 文件路径已追加。")
         waziLog.log("info", f"({self.name}.{fuName}) 数据： {images}，结果返回。")
         return images
@@ -2899,9 +2886,9 @@ class waziExHentai:
                 waziLog.log("debug", f"({self.name}.{fuName}) 数据获取完成： {data}")
                 yield data
 
-    def getNormalImages(self, link, method, params):
+    def getNormalImages(self, link, method, japaneseNeed, path):
         """
-        waziExHentai.getNormalImages(self, link, method, params)
+        waziExHentai.getNormalImages(self, link, method, japaneseNeed, path)
         *Brave, optimistic, calm.*
 
         Get normal images at once. May take a long time.
@@ -2914,13 +2901,11 @@ class waziExHentai:
             method: str
                 "get" or "download".
             
-            params: dict
-                Parameters.
-                Like:
-                {
-                    "japanese": bool,               # Whether to get japanese title.
-                    "path": str,                    # Path to save.
-                }
+            japaneseNeed: bool
+                Whether to return the title in Japanese.
+            
+            path: str
+                The path to create the folder.
             
         Return:
             get:
@@ -2936,15 +2921,15 @@ class waziExHentai:
                 Perhaps there are potential errors.
         """
         fuName = waziFun.getFuncName()
-        waziLog.log("debug", f"({self.name}.{fuName}) 收到 URL， 方式和参数，正在获取图像列表。")
-        waziLog.log("debug", f"({self.name}.{fuName}) 方式： {method}， 参数： {params}，URL： {link}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到 URL， 方式， 日文标题需求和路径，正在获取图像列表。")
+        waziLog.log("debug", f"({self.name}.{fuName}) 方式： {method}， 日文标题需求： {japaneseNeed}， 路径： {path}， URL： {link}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取标题。")
-        title = waziExHentai.getTitle(self, link, params)
+        title = waziExHentai.getTitle(self, link, japaneseNeed)
         waziLog.log("debug", f"({self.name}.{fuName}) 标题获取成功： {title}")
         normalImages = []
         if method == "download":
             waziLog.log("debug", f"({self.name}.{fuName}) 检测到下载模式，准备新建文件夹。")
-            waziExHentai.createFolder(self, link, params)
+            waziExHentai.createFolder(self, link, japaneseNeed, path)
             waziLog.log("debug", f"({self.name}.{fuName}) 文件夹新建完成。")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取页码信息。")
         page = waziExHentai.getPages(self, link)
@@ -2953,7 +2938,7 @@ class waziExHentai:
             waziLog.log("debug", f"({self.name}.{fuName}) 检测到无需翻页，正在通过 returnSoup 获取页面 Soup 信息。")
             soup = waziExHentai.returnSoup(self, link)
             waziLog.log("debug", f"({self.name}.{fuName}) Soup 信息获取完成，正在通过 getImages 获取。")
-            data = waziExHentai.getImages(self, soup, method, title, params)
+            data = waziExHentai.getImages(self, soup, method, title, path)
             waziLog.log("info", f"({self.name}.{fuName}) 获取完成： {data}")
             return data
         else:
@@ -2964,7 +2949,7 @@ class waziExHentai:
                 waziLog.log("debug", f"({self.name}.{fuName}) URL 合成完毕： {url}，正在通过 returnSoup 获取 Soup。")
                 soup = waziExHentai.returnSoup(self, url)
                 waziLog.log("debug", f"({self.name}.{fuName}) Soup 信息获取完成，正在通过 getImages 获取。")
-                data = waziExHentai.getImages(self, soup, method, title, params)
+                data = waziExHentai.getImages(self, soup, method, title, path)
                 waziLog.log("debug", f"({self.name}.{fuName}) 数据获取完成： {data}")
                 normalImages.append(data)
                 waziLog.log("debug", f"({self.name}.{fuName}) 数据追加完成。")
@@ -3236,7 +3221,7 @@ class waziExHentai:
         waziLog.log("info", f"({self.name}.{fuName}) 数据： {twoLists}")
         return twoLists
 
-    def downloadArchives(self, link, params, sample):
+    def downloadArchives(self, link, japaneseNeed, path, sample):
         """
         waziExHentai.downloadArchives(self, link, params, sample)
         *Bad bot.*
@@ -3247,13 +3232,11 @@ class waziExHentai:
             link: str
                 Gallery link. Like https://exhentai.org/g/2011308/8263590d02/.
             
-            params: dict
-                Parameters.
-                Like:
-                {
-                    "japanese": bool,               # Whether to get japanese title.
-                    "path": str,                    # Path to save.
-                }
+            japaneseNeed: bool
+                Whether to return the title in Japanese.
+            
+            path: str
+                The path to create the folder.
 
             sample: str
                 Need sample. If input "", it will download all archives.
@@ -3279,17 +3262,18 @@ class waziExHentai:
                     + Cannot download.
         """
         fuName = waziFun.getFuncName()
-        waziLog.log("debug", f"({self.name}.{fuName}) 收到画廊地址，参数和清晰度，正在获取压缩包下载。")
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到画廊地址，日文标题需求，路径和清晰度，正在获取压缩包下载。")
         waziLog.log("debug", f"({self.name}.{fuName}) 画廊地址： {link}")
-        waziLog.log("debug", f"({self.name}.{fuName}) 参数： {params}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 日文标题需求： {japaneseNeed}")
+        waziLog.log("debug", f"({self.name}.{fuName}) 路径： {path}")
         waziLog.log("debug", f"({self.name}.{fuName}) 清晰度： {sample}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在修改请求 Header。")
         tempParams = self.params
         tempParams["useHeaders"] = True
         waziLog.log("debug", f"({self.name}.{fuName}) 请求 Header 修改完成： {tempParams}，正在通过 getTitle 获取标题。")
-        title = waziExHentai.getTitle(self, link, params)
+        title = waziExHentai.getTitle(self, link, japaneseNeed)
         waziLog.log("debug", f"({self.name}.{fuName}) 获取完成： {title}，正在创建文件夹。")
-        waziExHentai.createFolder(self, link, params)
+        waziExHentai.createFolder(self, link, japaneseNeed, path)
         waziLog.log("debug", f"({self.name}.{fuName}) 文件夹创建完成，正在获取压缩包下载链接。")
         links = waziExHentai.getArchives(self, link)
         waziLog.log("debug", f"({self.name}.{fuName}) 获取完成，压缩包下载链接： {links}")
@@ -3327,11 +3311,11 @@ class waziExHentai:
                                                           .encode("latin1").decode("utf-8"))
                                 waziLog.log("debug", f"({self.name}.{fuName}) 处理完成： {fileName}")
                             waziLog.log("debug", f"({self.name}.{fuName}) 正在写入文件。")
-                            with open(os.path.join(params["path"], self.fileName.toRight(title),
+                            with open(os.path.join(path, self.fileName.toRight(title),
                                                    i["type"] + "_" + self.fileName.toRight(fileName)), "wb") as f:
                                 f.write(temp.data)
                             waziLog.log("info", f"({self.name}.{fuName}) 写入完成，下载文件路径已返回。")
-                            return os.path.join(params["path"], self.fileName.toRight(title), i["type"] + "_"
+                            return os.path.join(path, self.fileName.toRight(title), i["type"] + "_"
                                                 + self.fileName.toRight(fileName))
         waziLog.log("debug", f"({self.name}.{fuName}) 全尺寸下载。")
         for i in links:
@@ -3357,10 +3341,10 @@ class waziExHentai:
                                                   .encode("latin1").decode("utf-8"))
                         waziLog.log("debug", f"({self.name}.{fuName}) 处理完成： {fileName}")
                     waziLog.log("debug", f"({self.name}.{fuName}) 正在追加文件路径。")
-                    files.append(os.path.join(params["path"], self.fileName.toRight(title),
+                    files.append(os.path.join(path, self.fileName.toRight(title),
                                               i["type"] + "_" + self.fileName.toRight(fileName)))
                     waziLog.log("debug", f"({self.name}.{fuName}) 追加完成，正在写入文件。")
-                    with open(os.path.join(params["path"], self.fileName.toRight(title), i["type"] + "_"
+                    with open(os.path.join(path, self.fileName.toRight(title), i["type"] + "_"
                                            + self.fileName.toRight(fileName)), "wb") as f:
                         f.write(temp.data)
                     waziLog.log("debug", f"({self.name}.{fuName}) 写入完成。")

@@ -131,7 +131,7 @@ class waziNyaa:
                 else:
                     self.tempFiles.append(i.text.strip())
     
-    def returnSoup(self, link, xml):
+    def returnSoup(self, link, xml = False):
         """
         waziNyaa.returnSoup(self, link, xml)
         *Reuse, abstract. But I cannot.*
