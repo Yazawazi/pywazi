@@ -8,6 +8,7 @@ import os
 import time
 from mods.waziColor import waziColor
 
+
 class waziLog:
     """
     waziLog
@@ -60,16 +61,14 @@ class waziLog:
         self.createLogsFolder()
         self.setSaveName()
 
-    def createLogsFolder(self):
+    @staticmethod
+    def createLogsFolder():
         """
         waziLog.createLogsFolder(self)
         *Give them a home.*
 
-        Create the logs folder if it doesn't exist.
+        Create the log's folder if it doesn't exist.
         Called in __init__.
-
-        Parameters:
-            None
 
         Return:
             None
@@ -88,9 +87,6 @@ class waziLog:
         Set the save name of the log file.
         Called in __init__.
 
-        Parameters:
-            None
-        
         Return:
             None
         
@@ -153,9 +149,6 @@ class waziLog:
 
         Force save the log.
 
-        Parameters:
-            None
-        
         Return:
             None
         

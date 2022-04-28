@@ -16,6 +16,7 @@ from ins.waziInsLog import waziLog
 from mods.waziRequest import waziRequest
 from mods.waziFileName import waziFileName
 
+
 class waziDanbooru:
     """
     waziDanbooru
@@ -246,7 +247,7 @@ class waziDanbooru:
             Example:
                 [{
                     'id': 334447,
-                    'tags': 'asamura_hiori bikini blush breasts brown_hair choker cleavage cross fang gradient green_eyes katana long_hair magic original skirt swimsuit sword thighhighs weapon zettai_ryouiki',
+                    'tags': '...',
                     'created_at': 1636920653,
                     'creator_id': 73632,
                     'author': 'otaku_emmy',
@@ -255,18 +256,18 @@ class waziDanbooru:
                     'score': 32,
                     'md5': 'a2e11789abfdd59830b33f2598b5de5e',
                     'file_size': 4911373,
-                    'file_url': 'https://konachan.com/image/a2e11789abfdd59830b33f2598b5de5e/Konachan.com%20-%20334447%20bikini%20blush%20breasts%20brown_hair%20choker%20cleavage%20cross%20fang%20gradient%20green_eyes%20katana%20long_hair%20magic%20original%20skirt%20swimsuit%20sword%20thighhighs%20weapon.png',
+                    'file_url': '...',
                     'is_shown_in_index': True,
                     'preview_url': 'https://konachan.com/data/preview/a2/e1/a2e11789abfdd59830b33f2598b5de5e.jpg',
                     'preview_width': 150,
                     'preview_height': 89,
                     'actual_preview_width': 300,
                     'actual_preview_height': 179,
-                    'sample_url': 'https://konachan.com/sample/a2e11789abfdd59830b33f2598b5de5e/Konachan.com%20-%20334447%20sample.jpg',
+                    'sample_url': '...',
                     'sample_width': 1500,
                     'sample_height': 893,
                     'sample_file_size': 349306,
-                    'jpeg_url': 'https://konachan.com/jpeg/a2e11789abfdd59830b33f2598b5de5e/Konachan.com%20-%20334447%20bikini%20blush%20breasts%20brown_hair%20choker%20cleavage%20cross%20fang%20gradient%20green_eyes%20katana%20long_hair%20magic%20original%20skirt%20swimsuit%20sword%20thighhighs%20weapon.jpg',
+                    'jpeg_url': '...',
                     'jpeg_width': 3500,
                     'jpeg_height': 2084,
                     'jpeg_file_size': 615611,
@@ -523,8 +524,8 @@ class waziDanbooru:
                 lists,
                 path,
                 key,
-                self.URL.getFullURL(urllib.parse.urljoin(self.api, self.ports["post"]), params
-            ))
+                self.URL.getFullURL(urllib.parse.urljoin(self.api, self.ports["post"]), params)
+            )
         else:
             return waziDanbooru.download(
                 self,
@@ -696,7 +697,7 @@ class waziDanbooru:
                 'user_id': 73632,
                 'is_public': True,
                 'post_count': 160,
-                'description': "A Twitter meme where characters are drawn in an extreme top-down bottom-up resembling Jack-O' Valentine's crouch pose."
+                'description': "..."
             }]
         
         Errors:
@@ -741,10 +742,10 @@ class waziDanbooru:
                 'user_id': 73632,
                 'is_public': True,
                 'post_count': 26,
-                'description': 'Art fad started in May 2020 wherein various artists redraw and parody a screenshot from the classic Sailor Moon anime.',
+                'description': '...',
                 'posts': [{
                     'id': 306979,
-                    'tags': 'aqua_eyes blonde_hair blush breasts choker cleavage close headband long_hair parody sailor_moon sailor_moon_(character) school_uniform tsukimaru tsukino_usagi twintails',
+                    'tags': '...',
                     'created_at': '2020-05-18T06:13:47.090Z',
                     'creator_id': 257706,
                     'author': 'Dreista',
@@ -753,18 +754,18 @@ class waziDanbooru:
                     'score': 49,
                     'md5': '8ce8b8db600fab17dc05bfc9c28157a5',
                     'file_size': 6173818,
-                    'file_url': 'https://konachan.com/image/8ce8b8db600fab17dc05bfc9c28157a5/Konachan.com%20-%20306979%20aqua_eyes%20blonde_hair%20blush%20breasts%20choker%20cleavage%20close%20headband%20long_hair%20parody%20sailor_moon%20school_uniform%20tsukimaru%20tsukino_usagi%20twintails.png',
+                    'file_url': '...',
                     'is_shown_in_index': True,
                     'preview_url': 'https://konachan.com/data/preview/8c/e8/8ce8b8db600fab17dc05bfc9c28157a5.jpg',
                     'preview_width': 150,
                     'preview_height': 96,
                     'actual_preview_width': 300,
                     'actual_preview_height': 191,
-                    'sample_url': 'https://konachan.com/sample/8ce8b8db600fab17dc05bfc9c28157a5/Konachan.com%20-%20306979%20sample.jpg',
+                    'sample_url': '...',
                     'sample_width': 1500,
                     'sample_height': 956,
                     'sample_file_size': 586758,
-                    'jpeg_url': 'https://konachan.com/jpeg/8ce8b8db600fab17dc05bfc9c28157a5/Konachan.com%20-%20306979%20aqua_eyes%20blonde_hair%20blush%20breasts%20choker%20cleavage%20close%20headband%20long_hair%20parody%20sailor_moon%20school_uniform%20tsukimaru%20tsukino_usagi%20twintails.jpg',
+                    'jpeg_url': '...',
                     'jpeg_width': 4050,
                     'jpeg_height': 2580,
                     'jpeg_file_size': 1177937,

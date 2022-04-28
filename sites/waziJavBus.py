@@ -21,12 +21,13 @@ from mods.waziFileName import waziFileName
 # 第二个非常棘手的事情 那就是不知道为什么获得到的信息总比浏览器获取到的少
 # 具体的副作用就是无法获得论坛热帖和女优列表获取失败（代理？）
 
+
 class waziJavBus:
     """
     waziJavBus
     *Greatness.*
 
-    A class for crawling the JavBus.com and JavBus.red
+    A class for crawling the JavBus.com and `JavBus.red`
     (include the mirror)
 
     Attributes:
@@ -67,7 +68,8 @@ class waziJavBus:
     def __init__(self):
         """
         waziJavBus.__init__(self)
-        *Reason is, and ought only to be the slave of the passions, and can never pretend to any other office than to serve and obey them. -- A Treatise of Human Nature*
+        *Reason is, and ought only to be the slave of the passions,
+        and can never pretend to any other office than to serve and obey them. -- A Treatise of Human Nature*
 
         Parameters:
             None
@@ -188,15 +190,15 @@ class waziJavBus:
         waziJavBus.setEAApiUrl(self, url)
         *Symbolic Interactionism Theory.*
 
-        Set the javbus.red mirror url, if you need.
+        Set the `javbus.red` mirror url, if you need.
 
         Parameters:
             url: str
-                The url of the javbus.red mirror.
+                The url of the `javbus.red` mirror.
         
         Return:
             Type: str
-            Current url of the javbus.red mirror.
+            Current url of the `javbus.red` mirror.
         
         Errors:
             None
@@ -217,7 +219,8 @@ class waziJavBus:
         *Doubt about man-made.*
 
         Use urllib to get page.
-        Why: https://stackoverflow.com/questions/62684468/pythons-requests-triggers-cloudflares-security-while-urllib-does-not
+        Why:
+        https://stackoverflow.com/questions/62684468/pythons-requests-triggers-cloudflares-security-while-urllib-does-not
 
         Parameters:
             url: str
@@ -227,7 +230,7 @@ class waziJavBus:
                 The request headers.
             
             needOrg: bool
-                Whether need to return the str .
+                Whether you need to return the str .
                 Or just return BeautifulSoup object.
         
         Return:
@@ -620,7 +623,7 @@ class waziJavBus:
                 A BeautifulSoup object to get the details.
             
             ea: bool
-                Whether the AV is from javbus.red or not.
+                Whether the AV is from `javbus.red` or not.
         
         Return:
             Type: dict{}
@@ -1338,7 +1341,7 @@ class waziJavBus:
         waziJavBus.withEADirectorBrowse(self, page, directorId)
         *I don't care about the country, I mean, the bragging ambitions and the unification plans.*
 
-        Browse the avs with the director from javbus.red
+        Browse the avs with the director from `javbus.red`
 
         Parameters:
             page: int or str
@@ -1465,7 +1468,7 @@ class waziJavBus:
         waziJavBus.withEAStudioBrowse(self, page, studioId)
         *Shen bi.*
 
-        Browse the avs with the studio from javbus.red
+        Browse the avs with the studio from `javbus.red`
 
         Parameters:
             page: int or str
@@ -1592,7 +1595,7 @@ class waziJavBus:
         waziJavBus.withEALabelBrowse(self, page, labelId)
         *Box.*
 
-        Browse the avs with the label from javbus.red
+        Browse the avs with the label from `javbus.red`
 
         Parameters:
             page: int or str
@@ -1719,7 +1722,7 @@ class waziJavBus:
         waziJavBus.withEASeriesBrowse(self, page, seriesId)
         *Myspace.*
 
-        Browse the avs with the series from javbus.red
+        Browse the avs with the series from `javbus.red`
 
         Parameters:
             page: int or str
@@ -1818,9 +1821,6 @@ class waziJavBus:
 
         Get the tags list from javbus.red.
 
-        Parameters:
-            None
-        
         Return:
             Type: list[dict{}]
             The result.

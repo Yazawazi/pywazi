@@ -11,6 +11,7 @@ from ins.waziInsLog import waziLog
 from mods.waziCheck import waziCheck
 from mods.waziRequest import waziRequest
 
+
 class waziNyaa:
     """
     waziNyaa
@@ -241,51 +242,70 @@ class waziNyaa:
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 收到 Soup 和 site 参数，正在解析。")
         waziLog.log("debug", f"({self.name}.{fuName}) 站点： {site}")
-        itemInfo = {}
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取 container。")
         container = soup.find_all("div", class_ = "container")[1]
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子类型。")
         classNamesList = container.find(class_ = "panel").attrs["class"]
         if "panel-danger" in classNamesList:
-            itemInfo["type"] = self.check.nyaaTranslations["panel-danger"]
+            itemType = self.check.nyaaTranslations["panel-danger"]
         elif "panel-success" in classNamesList:
-            itemInfo["type"] = self.check.nyaaTranslations["panel-success"]
+            itemType = self.check.nyaaTranslations["panel-success"]
         else:
-            itemInfo["type"] = self.check.nyaaTranslations["panel-default"]
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子标题。")
-        itemInfo["title"] = soup.find(class_ = "panel-title").text.strip()
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子分类。")
-        itemInfo["category"] = {
-            "fatherCategory": soup.find(class_ = "panel-body").find_all(class_ = "row")[0].find_all(class_ = "col-md-5")[0].find_all("a")[0].text,
-            "fatherCategoryId": soup.find(class_ = "panel-body").find_all(class_ = "row")[0].find_all(class_ = "col-md-5")[0].find_all("a")[0].attrs["href"].split("=")[-1],
-            "subCategory": soup.find(class_ = "panel-body").find_all(class_ = "row")[0].find_all(class_ = "col-md-5")[0].find_all("a")[1].text,
-            "subCategoryId": soup.find(class_ = "panel-body").find_all(class_ = "row")[0].find_all(class_ = "col-md-5")[0].find_all("a")[1].attrs["href"].split("=")[-1],
+            itemType = self.check.nyaaTranslations["panel-default"]
+        title = soup.find(class_ = "panel-title").text.strip()
+        colMD5 = soup.find(class_ = "panel-body").find_all(class_ = "row")[0].find_all(class_ = "col-md-5")[0]
+        colMD51 = soup.find(class_ = "panel-body").find_all(class_ = "row")[0].find_all(class_ = "col-md-5")[1]
+        row1colMD5 = soup.find(class_ = "panel-body").find_all(class_ = "row")[1].find_all(class_ = "col-md-5")[0]
+        row1colMD51 = soup.find(class_ = "panel-body").find_all(class_ = "row")[1].find_all(class_ = "col-md-5")[1]
+        row2colMD5 = soup.find(class_="panel-body").find_all(class_ = "row")[2].find_all(class_ = "col-md-5")[0]
+        row2colMD51 = soup.find(class_ = "panel-body").find_all(class_ = "row")[2].find_all(class_ = "col-md-5")[1]
+        row3colMD5 = soup.find(class_ = "panel-body").find_all(class_ = "row")[3].find_all(class_ = "col-md-5")[0]
+        row3colMD51 = soup.find(class_ = "panel-body").find_all(class_ = "row")[3].find_all(class_ = "col-md-5")[1]
+        row4colMD5 = soup.find(class_ = "panel-body").find_all(class_ = "row")[4].find_all(class_ = "col-md-5")[0]
+        fatherCategory = colMD5.find_all("a")[0].text
+        fatherCategoryId = colMD5.find_all("a")[0].attrs["href"].split("=")[-1]
+        subCategory = colMD5.find_all("a")[1].text
+        subCategoryId = colMD5.find_all("a")[1].attrs["href"].split("=")[-1]
+        time = colMD51.text
+        timeStamp = int(colMD51.attrs["data-timestamp"])
+        uploader = row1colMD5.find_all("a")[0].text
+        uploaderLink = self.urls[int(site)] + "user/" + row1colMD5.find_all("a")[0].attrs["href"].split("/")[-1]
+        seeders = int(row1colMD51.text)
+        information = row2colMD5.text.strip()
+        informationLink = row2colMD5.find("a").attrs["href"]
+        leechers = int(row2colMD51.text)
+        size = row3colMD5.text.strip()
+        completes = int(row3colMD51.text)
+        hashString = row4colMD5.text.strip()
+        itemInfo = {
+            "type": itemType,
+            "title": title,
+            "category": {
+                "fatherCategory": fatherCategory,
+                "fatherCategoryId": fatherCategoryId,
+                "subCategory": subCategory,
+                "subCategoryId": subCategoryId,
+                "category": fatherCategory + subCategory
+            },
+            "time": time,
+            "timeStamp": timeStamp,
+            "uploader": uploader,
+            "uploaderLink": uploaderLink,
+            "seeders": seeders,
+            "information": information,
+            "informationLink": informationLink,
+            "leechers": leechers,
+            "size": size,
+            "completes": completes,
+            "hash": hashString
         }
-        itemInfo["category"]["category"] = itemInfo["category"]["fatherCategory"] + " - " + itemInfo["category"]["subCategory"]
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子时间。")
-        itemInfo["time"] = soup.find(class_ = "panel-body").find_all(class_ = "row")[0].find_all(class_ = "col-md-5")[1].text
-        itemInfo["timeStamp"] = int(soup.find(class_ = "panel-body").find_all(class_ = "row")[0].find_all(class_ = "col-md-5")[1].attrs["data-timestamp"])
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子上传者。")
-        itemInfo["uploader"] = soup.find(class_ = "panel-body").find_all(class_ = "row")[1].find_all(class_ = "col-md-5")[0].find_all("a")[0].text
-        itemInfo["uploaderLink"] = self.urls[int(site)] + "user/" + soup.find(class_ = "panel-body").find_all(class_ = "row")[1].find_all(class_ = "col-md-5")[0].find_all("a")[0].attrs["href"].split("/")[-1]
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子做种人数。")
-        itemInfo["seeders"] = int(soup.find(class_ = "panel-body").find_all(class_ = "row")[1].find_all(class_ = "col-md-5")[1].text)
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子信息。")
-        itemInfo["information"] = soup.find(class_ = "panel-body").find_all(class_ = "row")[2].find_all(class_ = "col-md-5")[0].text.strip()
-        itemInfo["informationLink"] = soup.find(class_ = "panel-body").find_all(class_ = "row")[2].find_all(class_ = "col-md-5")[0].find("a").attrs["href"]
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子吸血鬼数量")
-        itemInfo["leechers"] = int(soup.find(class_ = "panel-body").find_all(class_ = "row")[2].find_all(class_ = "col-md-5")[1].text)
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子大小。")
-        itemInfo["size"] = soup.find(class_ = "panel-body").find_all(class_ = "row")[3].find_all(class_ = "col-md-5")[0].text
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子完全下载人数。")
-        itemInfo["completes"] = int(soup.find(class_ = "panel-body").find_all(class_ = "row")[3].find_all(class_ = "col-md-5")[1].text)
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子哈希。")
-        itemInfo["hash"] = soup.find(class_ = "panel-body").find_all(class_ = "row")[4].find_all(class_ = "col-md-5")[0].text
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子下载信息。")
         if "magnet:?xt=" in soup.find(class_ = "panel-footer").find_all("a")[0].attrs["href"]:
             itemInfo["torrent"] = None
         else:
-            itemInfo["torrent"] = self.urls[int(site)] + "download/" + soup.find(class_ = "panel-footer").find_all("a")[0].attrs["href"].split("/")[-1]
+            itemInfo["torrent"] = self.urls[int(site)]\
+                                  + "download/"\
+                                  + soup.find(class_ = "panel-footer").find_all("a")[0].attrs["href"].split("/")[-1]
         itemInfo["magnet"] = soup.find(class_ = "panel-footer").find_all("a")[-1].attrs["href"]
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取种子描述信息。")
         itemInfo["description"] = soup.find(id = "torrent-description").text
@@ -293,7 +313,7 @@ class waziNyaa:
         try:
             fileList = soup.find(class_ = "torrent-file-list").find("ul")
         except:
-            itemInfo["files"] = "File list is not available for this torrent."
+            itemInfo["files"] = ["File list is not available for this torrent."]
         else:
             self.tempFiles = []
             waziNyaa.getFiles(self, fileList)
@@ -304,20 +324,31 @@ class waziNyaa:
         else:
             comments = []
             for comment in soup.find_all(class_ = "comment-panel"):
-                commentInfo = {}
-                commentInfo["name"] = comment.find("p").find("a").text
-                commentInfo["link"] = self.urls[int(site)] + "user/" + comment.find("p").find("a").attrs["href"].split("/")[-1]
-                commentInfo["extra"] = comment.find("p").text.strip().replace(commentInfo["name"], "").strip().replace("(", "").replace(")", "")
-                commentInfo["avatar"] = comment.find("img").attrs["src"]
-                commentInfo["time"] = comment.find(class_ = "comment-details").find("a").text
-                commentInfo["timeStamp"] = int(comment.find(class_ = "comment-details").find("a").find("small").attrs["data-timestamp"])
+                name = comment.find("p").find("a").text
+                link = self.urls[int(site)] + "user/" + comment.find("p").find("a").attrs["href"].split("/")[-1]
+                extra = comment.find("p").text.strip().replace(name, "").strip().replace("(", "").replace(")", "")
+                avatar = comment.find("img").attrs["src"]
+                time = comment.find(class_ = "comment-details").find("a").text
+                timeStamp = comment.find(class_ = "comment-details").find("a").find("small").attrs["data-timestamp"]
+                timeStamp = int(timeStamp)
                 if len(comment.find(class_ = "comment-details").find_all("small")) == 2:
-                    commentInfo["editTime"] = comment.find(class_ = "comment-details").find_all("small")[1].attrs["title"]
-                    commentInfo["editTimeStamp"] = float(comment.find(class_ = "comment-details").find_all("small")[1].attrs["data-timestamp"])
+                    editTime = comment.find(class_ = "comment-details").find_all("small")[1].attrs["title"]
+                    stamp = comment.find(class_ = "comment-details").find_all("small")[1].attrs["data-timestamp"]
+                    editTimeStamp = float(stamp)
                 else:
-                    commentInfo["editTime"] = None
-                    commentInfo["editTimeStamp"] = None
-                commentInfo["comment"] = comment.find(class_ = "comment-content").text
+                    editTime = None
+                    editTimeStamp = None
+                commentInfo = {
+                    "name": name,
+                    "link": link,
+                    "extra": extra,
+                    "avatar": avatar,
+                    "time": time,
+                    "timeStamp": timeStamp,
+                    "editTime": editTime,
+                    "editTimeStamp": editTimeStamp,
+                    "comment": comment.find(class_ = "comment-content").text
+                }
                 comments.append(commentInfo)
             itemInfo["comments"] = comments
         waziLog.log("info", f"({self.name}.{fuName}) 获取完成： {itemInfo}")
@@ -501,7 +532,9 @@ class waziNyaa:
                 if "magnet:?xt=" in row.find_all("td")[2].find("a").attrs["href"]:
                     rowInfo["torrent"] = None
                 else:
-                    rowInfo["torrent"] = self.urls[int(site)] + "download/" + row.find_all("td")[2].find("a").attrs["href"].split("/")[-1]
+                    rowInfo["torrent"] = self.urls[int(site)]\
+                                         + "download/"\
+                                         + row.find_all("td")[2].find("a").attrs["href"].split("/")[-1]
                 rowInfo["magnet"] = row.find_all("td")[2].find_all("a")[-1].attrs["href"]
                 waziLog.log("debug", f"({self.name}.{fuName}) 解析种子文件大小。")
                 rowInfo["size"] = row.find_all("td")[3].text
@@ -532,7 +565,8 @@ class waziNyaa:
                     "keyword": str,                 # The search keyword.
                     "category": str,                # The category.
                     "filter": str,                  # The filter. No / No Remakes / Trusted Only
-                    "order": str,                   # The order. Comments / Size / Date / Seeders / Leechers / Completed Downloads,
+                    "order": str,                   # The order.
+                                                    # Comments / Size / Date / Seeders / Leechers / Completed Downloads,
                     "site": str or int,             # The site. 0 is https://nyaa.si/, 1 is https://sukebei.nyaa.si/
                     "orderBy": str                  # The order by. asc / desc
                 }
@@ -609,7 +643,8 @@ class waziNyaa:
                     "keyword": str,                 # The search keyword.
                     "category": str,                # The category.
                     "filter": str,                  # The filter. No / No Remakes / Trusted Only
-                    "order": str,                   # The order. Comments / Size / Date / Seeders / Leechers / Completed Downloads,
+                    "order": str,                   # The order.
+                                                    # Comments / Size / Date / Seeders / Leechers / Completed Downloads,
                     "site": str or int,             # The site. 0 is https://nyaa.si/, 1 is https://sukebei.nyaa.si/
                     "orderBy": str                  # The order by. asc / desc
                 }
@@ -672,13 +707,13 @@ class waziNyaa:
         waziLog.log("debug", f"({self.name}.{fuName}) 合成完成，正在解析： {url}")
         return waziNyaa.parseRSS(self, waziNyaa.returnSoup(self, url, True))
     
-    def getViewFromId(self, id, site):
+    def getViewFromId(self, itemId, site):
         """
-        waziNyaa.getViewFromId(self, id, site)
+        waziNyaa.getViewFromId(self, itemId, site)
         *I love CityPop.*
 
         Parameters:
-            id: int or str
+            itemId: int or str
                 The ID of the item.
 
             site: int or str
@@ -730,7 +765,7 @@ class waziNyaa:
         """
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 收到 ID 和 site 参数，正在获取 Soup。")
-        waziLog.log("debug", f"({self.name}.{fuName}) ID： {id}， 站点： {site}")
-        url = self.urls[int(site)] + "view/" + str(id)
+        waziLog.log("debug", f"({self.name}.{fuName}) ID： {itemId}， 站点： {site}")
+        url = self.urls[int(site)] + "view/" + str(itemId)
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取 Soup： {url}")
         return waziNyaa.parsePage(self, waziNyaa.returnSoup(self, url, False), int(site))

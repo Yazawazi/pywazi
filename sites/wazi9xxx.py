@@ -8,6 +8,7 @@ from ins.waziInsLog import waziLog
 from mods.waziRequest import waziRequest
 from mods.waziFileName import waziFileName
 
+
 class wazi9xxx:
     """
     wazi9xxx
@@ -68,7 +69,7 @@ class wazi9xxx:
         }
         self.params = {}
         self.name = self.__class__.__name__
-    
+
     def giveParams(self, params):
         """
         wazi9xxx.giveParams(self, params)
@@ -93,7 +94,7 @@ class wazi9xxx:
         self.params = params
         waziLog.log("info", f"({self.name}.{fuName}) 写入完成，目前配置为： {self.params}")
         return self.params
-    
+
     def returnSoup(self, link):
         """
         wazi9xxx.returnSoup(self, link)
@@ -134,7 +135,7 @@ class wazi9xxx:
         else:
             waziLog.log("info", f"({self.name}.{fuName}) 获取成功，Soup 返回中。")
             return soup
-    
+
     def sendPost(self, link):
         """
         wazi9xxx.sendPost(self, link)
@@ -194,7 +195,7 @@ class wazi9xxx:
             else:
                 waziLog.log("info", f"({self.name}.{fuName}) 获取成功： {temp}")
                 return temp
-    
+
     def downloadFile(self, url, name, path, video = False):
         """
         wazi9xxx.downloadFile(self, url, name, path, video = False)
@@ -281,7 +282,7 @@ class wazi9xxx:
                 return False
         waziLog.log("info", f"({self.name}.{fuName}) 文件： {fileName}， 完成。")
         return True
-    
+
     def getCommonInfo(self, soup):
         """
         wazi9xxx.getCommonInfo(self, soup)
@@ -318,7 +319,7 @@ class wazi9xxx:
             })
         waziLog.log("info", f"({self.name}.{fuName}) 信息获取完毕： {commonInfo}")
         return commonInfo
-    
+
     def getVideoDownloadLinks(self, href):
         """
         wazi9xxx.getVideoDownloadLinks(self, href)
@@ -405,7 +406,7 @@ class wazi9xxx:
             })
         waziLog.log("info", f"({self.name}.{fuName}) 信息获取完毕： {videos}")
         return videos
-    
+
     def parseVideoPage(self, soup):
         """
         wazi9xxx.parseVideoPage(self, soup)
@@ -541,7 +542,7 @@ class wazi9xxx:
                 "class": "tags"
             }).find_all("a")),
             "videos": wazi9xxx.getVideosInVideoPage(self, container),
-            "downloadLinks": wazi9xxx.getVideoDownloadLinks(self, 
+            "downloadLinks": wazi9xxx.getVideoDownloadLinks(self,
                 trueVideo.find("div", {
                     "class": "video-content"
                 }).find("iframe").attrs["src"]
@@ -549,7 +550,7 @@ class wazi9xxx:
         }
         waziLog.log("info", f"({self.name}.{fuName}) 信息获取完成： {video}")
         return video
-    
+
     def parseMoviesList(self, soup):
         """
         wazi9xxx.parseMoviesList(self, soup)
@@ -626,7 +627,7 @@ class wazi9xxx:
             })
         waziLog.log("info", f"({self.name}.{fuName}) 列表信息获取完成： {moviesList}")
         return moviesList
-    
+
     def parseRecentPosts(self, soup):
         """
         wazi9xxx.parseRecentPosts(self, soup)
@@ -676,7 +677,7 @@ class wazi9xxx:
             })
         waziLog.log("info", f"({self.name}.{fuName}) 最近文章获取完成： {recentPosts}")
         return recentPosts
-    
+
     def parseTagsList(self, soup, tag = False):
         """
         wazi9xxx.parseTagsList(self, soup, tag = False)
@@ -741,7 +742,7 @@ class wazi9xxx:
             })
         waziLog.log("info", f"({self.name}.{fuName}) 标签获取完成： {tagsList}")
         return tagsList
-    
+
     def parseSearch(self, soup):
         """
         wazi9xxx.parseSearch(self, soup)
@@ -774,13 +775,13 @@ class wazi9xxx:
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 转移到 parseMovies 接口。")
         return wazi9xxx.parseMoviesList(self, soup)
-    
+
     def parseTagAndMoreSearch(self, soup):
         """
         wazi9xxx.parseTagAndMoreSearch(self, soup)
         *Open.*
 
-        Parse the tag, actor, etc result in soup.
+        Parse the tag, actor, etc. result in soup.
 
         Parameters:
             soup: BeautifulSoup
@@ -827,8 +828,9 @@ class wazi9xxx:
         """
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 转移到 parseMoviesList, parseTagsList & parseRecentPosts 接口。")
-        return (wazi9xxx.parseMoviesList(self, soup), wazi9xxx.parseTagsList(self, soup, True), wazi9xxx.parseRecentPosts(self, soup))
-    
+        return (wazi9xxx.parseMoviesList(self, soup), wazi9xxx.parseTagsList(self, soup, True),
+                wazi9xxx.parseRecentPosts(self, soup))
+
     def parseMainAndCategory(self, soup):
         """
         wazi9xxx.parseMainAndCategory(self, soup)
@@ -872,8 +874,8 @@ class wazi9xxx:
         """
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 转移到 parseMoviesList & parseTagsList 接口。")
-        return (wazi9xxx.parseMoviesList(self, soup), wazi9xxx.parseTagsList(self, soup))
-    
+        return wazi9xxx.parseMoviesList(self, soup), wazi9xxx.parseTagsList(self, soup)
+
     def parseVideo(self, soup):
         """
         wazi9xxx.parseVideo(self, soup)
@@ -945,7 +947,7 @@ class wazi9xxx:
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 转移到 parseVideoPage 接口。")
         return wazi9xxx.parseVideoPage(self, soup)
-    
+
     def search(self, keyword, page):
         """
         wazi9xxx.search(self, keyword, page)
@@ -988,7 +990,7 @@ class wazi9xxx:
         waziLog.log("debug", f"({self.name}.{fuName}) URL 字符串合成完毕，为 {url}。")
         waziLog.log("debug", f"({self.name}.{fuName}) 转移至 parseSearch 接口。")
         return wazi9xxx.parseSearch(self, wazi9xxx.returnSoup(self, url))
-    
+
     def getVideo(self, videoId, name):
         """
         wazi9xxx.getVideo(self, videoId, name)
@@ -1067,7 +1069,7 @@ class wazi9xxx:
         waziLog.log("debug", f"({self.name}.{fuName}) URL 字符串合成完毕，为 {url}。")
         waziLog.log("debug", f"({self.name}.{fuName}) 转移至 parseVideo 接口。")
         return wazi9xxx.parseVideo(self, wazi9xxx.returnSoup(self, url))
-    
+
     def downloadVideo(self, videoId, name, path, label):
         """
         wazi9xxx.downloadVideo(self, videoId, name, path, label)
@@ -1160,9 +1162,9 @@ class wazi9xxx:
                     True
                 )
                 videoStatuses.append(videoStatus)
-            waziLog.log("info", f"({self.name}.{fuName}) 下载情况如下： {coverStatus}， {posterStatus}， {videoStatus}。")
+            waziLog.log("info", f"({self.name}.{fuName}) 下载情况如下： {coverStatus}， {posterStatus}， {videoStatuses}。")
             return coverStatus and posterStatus and all(videoStatuses)
-    
+
     def getCategory(self, category, page, sort = None):
         """
         wazi9xxx.getCategory(self, category, page, sort = None)
@@ -1226,7 +1228,7 @@ class wazi9xxx:
         waziLog.log("debug", f"({self.name}.{fuName}) 构建完成： {url}。")
         waziLog.log("debug", f"({self.name}.{fuName}) 转移至 parseMainAndCategory 接口。")
         return wazi9xxx.parseMainAndCategory(self, wazi9xxx.returnSoup(self, url))
-    
+
     def getTag(self, tag, page):
         """
         wazi9xxx.getTag(self, tag, page)
@@ -1290,7 +1292,7 @@ class wazi9xxx:
         waziLog.log("debug", f"({self.name}.{fuName}) 构建完成： {url}。")
         waziLog.log("debug", f"({self.name}.{fuName}) 转移至 parseTagAndMoreSearch 接口。")
         return wazi9xxx.parseTagAndMoreSearch(self, wazi9xxx.returnSoup(self, url))
-    
+
     def getActor(self, actor, page):
         """
         wazi9xxx.getActor(self, actor, page)
@@ -1354,7 +1356,7 @@ class wazi9xxx:
         waziLog.log("debug", f"({self.name}.{fuName}) 构建完成： {url}。")
         waziLog.log("debug", f"({self.name}.{fuName}) 转移至 parseTagAndMoreSearch 接口。")
         return wazi9xxx.parseTagAndMoreSearch(self, wazi9xxx.returnSoup(self, url))
-    
+
     def getDirector(self, director, page):
         """
         wazi9xxx.getDirector(self, director, page)
@@ -1418,7 +1420,7 @@ class wazi9xxx:
         waziLog.log("debug", f"({self.name}.{fuName}) 构建完成： {url}。")
         waziLog.log("debug", f"({self.name}.{fuName}) 转移至 parseTagAndMoreSearch 接口。")
         return wazi9xxx.parseTagAndMoreSearch(self, wazi9xxx.returnSoup(self, url))
-    
+
     def getPage(self, page):
         """
         wazi9xxx.getPage(self, page)

@@ -4,15 +4,13 @@ mods/waziFun.py
 
 import inspect
 
+
 def getFuncName():
     """
     waziFun.getFuncName()
     *Get his name.*
 
     Get a function name.
-
-    Parameters:
-        None
 
     Return:
         Type: str

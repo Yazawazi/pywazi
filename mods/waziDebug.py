@@ -4,9 +4,10 @@ mods/waziDebug.py
 class: waziDebug
 """
 
-import os
+import sys
 import traceback
 import webbrowser
+
 
 class waziDebug:
     """
@@ -58,12 +59,11 @@ class waziDebug:
         """
         try:
             info = self._function(*args, **kwargs)
-        except Exception as e:
+        except Exception:
             error = traceback.format_exc()
             url = "https://stackoverflow.com/search?q=%5Bpython%5D+" + error.split("\n")[-2]
             webbrowser.open(url)
             traceback.print_exc()
-            os._exit(1)
-            return
+            sys.exit(1)
         else:
             return info

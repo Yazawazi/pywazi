@@ -12,6 +12,7 @@ from ins.waziInsLog import waziLog
 from mods.waziRequest import waziRequest
 from mods.waziFileName import waziFileName
 
+
 class waziAsianSister:
     """
     waziAsianSister
@@ -318,15 +319,21 @@ class waziAsianSister:
         video["recommends"] = []
         recommend = soup.find("div", class_ = "sub_contant")
         for i in recommend.find_all("a"):
-            if i.find("div", class_ = "recommendVideo_Image_Box").attrs["style"].split("url('")[1].split("')")[0].startswith("http"):
-                cover = i.find("div", class_ = "recommendVideo_Image_Box").attrs["style"].split("url('")[1].split("')")[0]
+            style = i.find("div", class_ = "recommendVideo_Image_Box").attrs["style"]
+            if style.split("url('")[1].split("')")[0].startswith("http"):
+                cover = i.find("div", class_ = "recommendVideo_Image_Box")
+                cover = cover.attrs["style"].split("url('")[1].split("')")[0]
             else:
-                cover = "https://asiansister.com/" + i.find("div", class_ = "recommendVideo_Image_Box").attrs["style"].split("url('")[1].split("')")[0]
+                info = i.find("div", class_ = "recommendVideo_Image_Box")
+                info = info.attrs["style"].split("url('")[1].split("')")[0]
+                cover = "https://asiansister.com/" + info
+            views = i.find("div", class_ = "recommendVideo_Text_Box").find("div")
+            views = views.text.replace(" views", "").replace(",", "")
             video["recommends"].append({
                 "title": str(i.find("div", class_ = "recommendVideo_Text_Box").text).strip().split("\n")[0],
                 "link": "https://asiansister.com/" + i.attrs["href"],
                 "cover": cover,
-                "views": int(i.find("div", class_ = "recommendVideo_Text_Box").find("div").text.replace(" views", "").replace(",", ""))
+                "views": int(views)
             })
         waziLog.log("info", f"({self.name}.{fuName}) 获取完成： {video}，正在返回。")
         return video
@@ -412,14 +419,16 @@ class waziAsianSister:
                     "link": "https://asiansister.com/" + tag.attrs["href"]
                 })
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取画廊描述。")
-        gallery["description"] = soup.find_all("div", class_ = "detailBoxHide")[1].text.strip().replace("<br>", "\n").replace("<br/>", "\n")
+        gallery["description"] = soup.find_all("div", class_ = "detailBoxHide")[1].text.strip()\
+                                     .replace("<br>", "\n").replace("<br/>", "\n")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在检查附加基础信息。")
         for i in soup.find_all("div", class_ = "headTitle"):
             if i.text.strip() == "Model / Actor":
                 waziLog.log("debug", f"({self.name}.{fuName}) 正在获取画廊模特信息。")
                 gallery["model"] = {
                     "name": soup.find("div", class_ = "modelBox").text,
-                    "link": "https://asiansister.com/" + soup.find("div", class_ = "modelBox").find_previous("a").attrs["href"]
+                    "link": "https://asiansister.com/" + soup.find("div", class_ = "modelBox")
+                                                             .find_previous("a").attrs["href"]
                 }
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取画廊封面图片列表。")
         gallery["covers"] = []
@@ -521,7 +530,8 @@ class waziAsianSister:
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取个人描述。")
         person["descriptionHTML"] = str(soup.find("div", {"id": "detailBox"}))
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取个人浏览量。")
-        person["views"] = int(soup.find("div", {"id": "detailBox"}).find("div").text.split(": ")[1].split("标签")[0].replace("Tag ", ""))
+        person["views"] = int(soup.find("div", {"id": "detailBox"}).find("div")
+                                  .text.split(": ")[1].split("标签")[0].replace("Tag ", ""))
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取个人标签。")
         person["tags"] = []
         for i in soup.find("div", {"id": "detailBox"}).find("div").find("h4").find_all("a"):
@@ -542,7 +552,7 @@ class waziAsianSister:
         waziAsianSister.parseRecommendImagesAndVideos(self, soup)
         *Emotion.*
 
-        Parse the recommend images and videos in the page.
+        Parse to recommend images and videos in the page.
 
         Parameters:
             soup: BeautifulSoup
@@ -1061,14 +1071,17 @@ class waziAsianSister:
             waziLog.log("debug", f"({self.name}.{fuName}) 存在图集信息，正在下载图集。")
             for picture in info["pictures"]:
                 waziLog.log("debug", f"({self.name}.{fuName}) 正在下载图片： {picture[key]}。")
-                if waziAsianSister.downloadFile(self, picture[key], picture[key].split("/")[-1], os.path.join(path, info["title"].strip())):
+                if waziAsianSister.downloadFile(self,
+                                                picture[key], picture[key].split("/")[-1],
+                                                os.path.join(path, info["title"].strip())):
                     waziLog.log("debug", f"({self.name}.{fuName}) 图片下载完成： {picture[key]}。")
-                    downloadFiles.append(os.path.join(os.path.join(path, info["title"].strip()), picture[key].split("/")[-1]))
+                    downloadFiles.append(os.path.join(os.path.join(path, info["title"].strip()),
+                                                      picture[key].split("/")[-1]))
                 else:
                     waziLog.log("warn", f"({self.name}.{fuName}) 图片下载失败： {picture[key]}。")
                     cannotDownloadFiles.append(picture[key])
         waziLog.log("info", f"({self.name}.{fuName}) 下载完成，数据返回。")
-        return (downloadFiles, cannotDownloadFiles)
+        return downloadFiles, cannotDownloadFiles
     
     def getVideo(self, video):
         """
@@ -1147,16 +1160,20 @@ class waziAsianSister:
         waziLog.log("debug", f"({self.name}.{fuName}) Soup 获取完成，正在从 parseVideo 中获取信息。")
         info = waziAsianSister.parseVideo(self, soup)
         waziLog.log("debug", f"({self.name}.{fuName}) 从 parseVideo 中获取信息完成，正在下载视频。")
-        if waziAsianSister.downloadFile(self, info["url"], info["url"].split("?")[0].split("/")[-1], os.path.join(path, info["title"].strip()), True):
+        if waziAsianSister.downloadFile(self,
+                                        info["url"],
+                                        info["url"].split("?")[0].split("/")[-1],
+                                        os.path.join(path, info["title"].strip()),
+                                        True):
             waziLog.log("info", f"({self.name}.{fuName}) 视频下载完成，返回路径。")
             return os.path.join(os.path.join(path, info["title"].strip()), info["url"].split("?")[0].split("/")[-1])
         else:
             waziLog.log("warn", f"({self.name}.{fuName}) 视频下载失败，请重试或检查日志！")
             return False
         
-    def customParse(self, content, type):
+    def customParse(self, content, parseType):
         """
-        waziAsianSister.customParse(self, content, type)
+        waziAsianSister.customParse(self, content, parseType)
         *Center.*
 
         Custom parse the content.
@@ -1165,7 +1182,7 @@ class waziAsianSister:
             content: str
                 The second half of the URL
             
-            type: str
+            parseType: str
                 The type of the content.
                     main: The main page.
                     person: The person page.
@@ -1188,26 +1205,26 @@ class waziAsianSister:
                     + The type of the content is not supported.
         """
         fuName = waziFun.getFuncName()
-        waziLog.log("debug", f"({self.name}.{fuName}) 收到补充 URL 和类型，正在生成 URL： {content}， {type}。")
+        waziLog.log("debug", f"({self.name}.{fuName}) 收到补充 URL 和类型，正在生成 URL： {content}， {parseType}。")
         url = "https://asiansister.com/" + content
         waziLog.log("debug", f"({self.name}.{fuName}) 正在通过 returnSoup 获取 Soup。")
         soup = waziAsianSister.returnSoup(self, url)
-        if type == "main":
+        if parseType == "main":
             waziLog.log("debug", f"({self.name}.{fuName}) 解析主页，已提交至 parseImagesAndVideos。")
             return waziAsianSister.parseImagesAndVideos(self, soup)
-        elif type == "person":
+        elif parseType == "person":
             waziLog.log("debug", f"({self.name}.{fuName}) 解析角色页，已提交至 parsePerson。")
             return waziAsianSister.parsePerson(self, soup)
-        elif type == "tag":
+        elif parseType == "tag":
             waziLog.log("debug", f"({self.name}.{fuName}) 解析标签页，已提交至 parseImagesAndVideos。")
             return waziAsianSister.parseImagesAndVideos(self, soup)
-        elif type == "search":
+        elif parseType == "search":
             waziLog.log("debug", f"({self.name}.{fuName}) 解析搜索页，已提交至 parseImagesAndVideos。")
             return waziAsianSister.parseImagesAndVideos(self, soup)
-        elif type == "gallery":
+        elif parseType == "gallery":
             waziLog.log("debug", f"({self.name}.{fuName}) 解析图集页，已提交至 parseGallery。")
             return waziAsianSister.parseGallery(self, soup)
-        elif type == "video":
+        elif parseType == "video":
             waziLog.log("debug", f"({self.name}.{fuName}) 解析视频页，已提交至 parseVideo。")
             return waziAsianSister.parseVideo(self, soup)
         else:

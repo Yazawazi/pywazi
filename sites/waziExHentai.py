@@ -4,9 +4,6 @@ sites/waziExHentai.py
 class: waziExHentai
 """
 
-# HTTPSConnectionPool(host='exhentai.org', port=443): Max retries exceeded with url: https://exhentai.org/ (Caused by ResponseError('too many redirects'))
-# Fix, keep your cookies correct.
-
 import os
 import re
 import json
@@ -20,6 +17,7 @@ from ins.waziInsLog import waziLog
 from mods.waziCheck import waziCheck
 from mods.waziRequest import waziRequest
 from mods.waziFileName import waziFileName
+
 
 class waziExHentai:
     """
@@ -81,7 +79,8 @@ class waziExHentai:
     def __init__(self):
         """
         waziExHentai.__init__(self)
-        *Some people are in love, some drive at night to see the sea, and some are dying to write development documents.*
+        *Some people are in love, some drive at night to see the sea,
+        and some are dying to write development documents.*
 
         Initialize this class.
 
@@ -91,7 +90,8 @@ class waziExHentai:
         super(waziExHentai, self).__init__()
         self.headers = {
             "Connection": "keep-alive",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.3",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.3",
             "Cookie": ""
         }
         self.proxies = {
@@ -356,14 +356,14 @@ class waziExHentai:
         Parameters:
             soup: BeautifulSoup
                 A BeautifulSoup object.
-                Must have a element with id "dms" and can't be None.
+                Must have an element with id "dms" and can't be None.
                 "dms" element must have a element named "select" and can't be None.
                 "select" element must have a element named "option" and can't be None.
-                The one of options must have a attribute named "selected".
+                The one of options must have an attribute named "selected".
         
         Return:
             Type: str
-            Current display mode. If cannot get, return "".
+            Current display mode. If it cannot get, return "".
         
         Errors:
             Python:
@@ -1028,7 +1028,7 @@ class waziExHentai:
         *Learn in living, to love, to die.*
 
         Get the books list from index page or search page.
-        If need to use parser, will use getDisplayMode() first.
+        If you need to use parser, will use getDisplayMode() first.
 
         Parameters:
             url: str
@@ -1236,7 +1236,7 @@ class waziExHentai:
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 收到页码和上传者参数，正在合成 URL。")
         waziLog.log("debug", f"({self.name}.{fuName}) 页码： {page}， 上传者： {uploader}")
-        url = self.urls["main"] + "uploader/" + uploader + "/" + str(page) + "?empty=0" # Why the empty=0?
+        url = self.urls["main"] + "uploader/" + uploader + "/" + str(page) + "?empty=0"
         waziLog.log("debug", f"({self.name}.{fuName}) URL 合成完毕，递交给 getBooks： {url}")
         return waziExHentai.getBooks(self, url)
     
@@ -1429,7 +1429,7 @@ class waziExHentai:
                     "sha1": str,                            # SHA-1 Hash.
                     "similar": bool,                        # Similarity Search.
                     "cover": bool,                          # Cover Search.
-                    "exp": bool,                            # Expunged Galleries Search.
+                    "exp": bool                             # Expunged Galleries Search.
                 }
                 
                 Type 2: Use the path of the image:
@@ -1438,7 +1438,7 @@ class waziExHentai:
                     "path": str,                            # Local Image Path.
                     "similar": bool,                        # Similarity Search.
                     "cover": bool,                          # Only Cover Search.
-                    "exp": bool,                            # Expunged Galleries Search.
+                    "exp": bool                             # Expunged Galleries Search.
                 }
         
         Return:
@@ -1531,7 +1531,8 @@ class waziExHentai:
                     "file": {  # File search parameters, if you need.
                         "main": {
                             "type": "path",  # Type can be path or sha1
-                            "value": "./a.jpg"  # If type is path, then value is the path of the file If type is sha1, then value is the sha1 of the file
+                            "value": "./a.jpg"  # If type is path, then value is the path of the file If type is sha1,
+                            then value is the sha1 of the file
                         },
                         "options": {
                             "useSimilarityScan": True,  # Use similarity scan
@@ -1792,7 +1793,7 @@ class waziExHentai:
         waziExHentai.getTorrent(self, link)
         *Low fever.*
 
-        Request a link and return torrents information.
+        Request a link and return torrents' information.
 
         Parameters:
             link: str
@@ -1818,7 +1819,7 @@ class waziExHentai:
             
             Logs:
                 Error:
-                    + Cannot get the torrents information.
+                    + Cannot get the torrents' information.
         """
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 收到请求 URL，正在获得其种子信息： {link}")
@@ -1837,14 +1838,15 @@ class waziExHentai:
             waziLog.log("debug", f"({self.name}.{fuName}) 获取成功，等待遍历： {tempNum}")
             for tempInfo in range(tempNum):
                 waziLog.log("debug", f"({self.name}.{fuName}) 进入 for in 循环，正在取出信息。")
+                tempInfo = soup.find_all("table")[tempInfo]
                 tempList = {
-                    "time": soup.find_all("table")[tempInfo].tr.find_all("td")[0].get_text().split("Posted: ")[1],
-                    "size": soup.find_all("table")[tempInfo].tr.find_all("td")[1].get_text().split("Size: ")[1],
-                    "seeds": int(soup.find_all("table")[tempInfo].tr.find_all("td")[3].get_text().split("Seeds: ")[1]),
-                    "peers": int(soup.find_all("table")[tempInfo].tr.find_all("td")[4].get_text().split("Peers: ")[1]),
-                    "total": int(soup.find_all("table")[tempInfo].tr.find_all("td")[5].get_text().split("Downloads: ")[1]),
-                    "link": soup.find_all("table")[tempInfo].find_all("tr")[2].a.attrs["href"],
-                    "name": soup.find_all("table")[tempInfo].find_all("tr")[2].a.get_text()
+                    "time": tempInfo.tr.find_all("td")[0].get_text().split("Posted: ")[1],
+                    "size": tempInfo.tr.find_all("td")[1].get_text().split("Size: ")[1],
+                    "seeds": int(tempInfo.tr.find_all("td")[3].get_text().split("Seeds: ")[1]),
+                    "peers": int(tempInfo.tr.find_all("td")[4].get_text().split("Peers: ")[1]),
+                    "total": int(tempInfo.tr.find_all("td")[5].get_text().split("Downloads: ")[1]),
+                    "link": tempInfo.find_all("tr")[2].a.attrs["href"],
+                    "name": tempInfo.find_all("tr")[2].a.get_text()
                 }
                 waziLog.log("debug", f"({self.name}.{fuName}) 信息取出完毕： {tempList}")
                 waziLog.log("debug", f"({self.name}.{fuName}) 追加至 torrents。")
@@ -2276,8 +2278,8 @@ class waziExHentai:
         Parse the soup for get normal thumbnails.
 
         Parameters:
-            link: str
-                A link to request. Like https://exhentai.org/g/2011308/8263590d02/
+            soup: BeautifulSoup
+                The soup to parse.
         
         Return:
             Type: list[dict{}]

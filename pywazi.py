@@ -31,6 +31,7 @@ waziAsianToLick = Watl()
 
 atexit.register(waziLog.forceSave)
 
+
 def waziGet(site):
     """
     waziGet(site)
@@ -68,6 +69,7 @@ def waziGet(site):
     else:
         return None
 
+
 class waziMain:
     def __init__(self):
         self.name = self.__class__.__name__
@@ -91,7 +93,8 @@ class waziMain:
                     "useHeaders": bool,                 # (*) Whether to use headers.
                     "headers": dict,                    # (*) The custom headers.
                 }
-                *: The parameters are not recommended. The program will auto set them. If you set them, may cause some problems.
+                *: The parameters are not recommended. The program will auto set them.
+                   If you set them, may cause some problems.
 
         Return:
             Type: dict
@@ -129,7 +132,8 @@ class waziMain:
                     "useHeaders": bool,                 # (*) Whether to use headers.
                     "headers": dict,                    # (*) The custom headers.
                 }
-                *: The parameters are not recommended. The program will auto set them. If you set them, may cause some problems.
+                *: The parameters are not recommended.
+                   The program will auto set them. If you set them, may cause some problems.
         
         Return:
             Type: dict
@@ -223,6 +227,7 @@ class waziMain:
             else:
                 pass
         return True
+
 
 """
 Try to import the global config file & config file: 

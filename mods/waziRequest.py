@@ -12,6 +12,7 @@ from ins.waziInsLog import waziLog
 
 urllib3.disable_warnings()
 
+
 class waziRequest:
     """
     waziRequest
@@ -100,7 +101,7 @@ class waziRequest:
         
         Return:
             Type: bool
-            Current proxies status.
+            Current proxies' status.
         
         Errors:
             None
@@ -211,7 +212,7 @@ class waziRequest:
         
         Return:
             Type: bool
-            Current custom headers status.
+            Current custom headers' status.
         
         Errors:
             None
@@ -509,6 +510,8 @@ class waziRequest:
                                 "http": self.proxies,
                                 "https": self.proxies
                             }
+                    else:
+                        proxies = {}
                     temp = self.downloadClass.run(
                         url = url,
                         filePath = data,
@@ -541,6 +544,8 @@ class waziRequest:
                                 "http": self.proxies,
                                 "https": self.proxies
                             }
+                    else:
+                        proxies = {}
                     temp = self.downloadClass.run(
                         url = url,
                         filePath = data,

@@ -8,6 +8,7 @@ import json
 from mods import waziFun
 from ins.waziInsLog import waziLog
 
+
 class waziConfig:
     """
     waziConfig

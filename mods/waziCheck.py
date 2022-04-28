@@ -10,6 +10,7 @@ import hashlib
 from mods import waziFun
 from ins.waziInsLog import waziLog
 
+
 class waziCheck:
     """
     waziCheck
@@ -30,7 +31,7 @@ class waziCheck:
 
         tags: list
             A list that contains all the categories of ExHentai.
-            (Why I call it tags? Cause I am a bad programmer.)
+            (Why I call it tags? Because I am a bad programmer.)
 
         tagsNumber: dict
             A dictionary for get ExHentai's categroy number.
@@ -194,7 +195,7 @@ class waziCheck:
         [ExHentai]
         If the page has torrents, return True, else return False.
         Why do I need to write a separate function out?
-        Cause I do not know. *^____^*
+        Because I do not know. *^____^*
 
         Parameters:
             soup: BeautifulSoup
@@ -388,10 +389,11 @@ class waziCheck:
                 The uuid of the request.
 
             apiKey: str
-                The api key of the request, usually it is "C69BAF41DA5ABD1FFEDC6D2FEA56B".
+                The api key of the request, typically it is "C69BAF41DA5ABD1FFEDC6D2FEA56B".
 
             secretKey: str
-                The secret key of the request, usually it is "~d}$Q7$eIni=V)9\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn".
+                The secret key of the request, usually it is
+                "~d}$Q7$eIni=V)9\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn".
 
         Return:
             Type: str
@@ -434,10 +436,11 @@ class waziCheck:
                 The uuid of the request.
 
             apiKey: str
-                The api key of the request, usually it is "C69BAF41DA5ABD1FFEDC6D2FEA56B".
+                The api key of the request, typically it is "C69BAF41DA5ABD1FFEDC6D2FEA56B".
 
             secretKey: str
-                The secret key of the request, usually it is "~d}$Q7$eIni=V)9\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn".
+                The secret key of the request, usually it is
+                "~d}$Q7$eIni=V)9\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn".
 
         Return:
             Type: list

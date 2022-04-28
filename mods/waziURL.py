@@ -9,6 +9,7 @@ from mods import waziFun
 from urllib import parse
 from ins.waziInsLog import waziLog
 
+
 class waziURL:
     """
     waziURL

@@ -7,6 +7,7 @@ from ins.waziInsLog import waziLog
 from mods.waziRequest import waziRequest
 from mods.waziFileName import waziFileName
 
+
 class waziAsianToLick:
     """
     waziAsianToLick
@@ -275,12 +276,18 @@ class waziAsianToLick:
         urlsList = []
         waziLog.log("debug", f"({self.name}.{fuName}) 已获取到　<url> 标签集合，正在进行一个遍历。")
         for url in urls:
+            urlId = url.find("loc").text.strip().split("/")[3].split("-")[1]
+            if url.find("loc").text.strip() == self.baseURL:
+                urlId = None
+            title = url.find("loc").text.strip().split("/")[-1]
+            if url.find("loc").text.strip() == self.baseURL:
+                title = None
             urlsList.append({
                 "url": url.find("loc").text.strip(),
                 "lastmod": url.find("lastmod").text.strip(),
                 "priority": float(url.find("priority").text.strip()),
-                "id": url.find("loc").text.strip().split("/")[3].split("-")[1] if url.find("loc").text.strip() != self.baseURL else None,
-                "title": url.find("loc").text.strip().split("/")[-1] if url.find("loc").text.strip() != self.baseURL else None
+                "id": urlId,
+                "title": title
             })
         waziLog.log("info", f"({self.name}.{fuName}) 信息获取完毕： {urlsList}")
         return urlsList
@@ -595,6 +602,8 @@ class waziAsianToLick:
                             "tagClass": span.get("class")[0],
                             "tagName": span.text.strip()
                         })
+            title = BeautifulSoup(re.sub('<span class="tt_tag_[a-zA-Z]+.*?">[a-zA-Z]+.*?</span>', "", str(baseTt.span)),
+                                  "lxml").text.strip()
             postsList.append({
                 "url": post.get("href"),
                 "hashId": post.get("id"),
@@ -608,7 +617,7 @@ class waziAsianToLick:
                     "class": "contar_imagens"
                 }).text.strip()),
                 "tags": tags,
-                "title": BeautifulSoup(re.sub('<span class="tt_tag_[a-zA-Z]+.*?">[a-zA-Z]+.*?</span>', "", str(baseTt.span)), "lxml").text.strip(),
+                "title": title,
             })
         waziLog.log("info", f"({self.name}.{fuName}) 该页面中所有 Post 获取完成： {postsList}")
         return postsList
@@ -618,7 +627,7 @@ class waziAsianToLick:
         waziAsianToLick.getTrueDownloadURL(self, soup)
         *Weeping Angel*
 
-        Get the a post's true download url.
+        Get the post's true download url.
 
         Parameters:
             soup: BeautifulSoup
@@ -648,10 +657,10 @@ class waziAsianToLick:
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取下载必须数据。")
         postId = downloadPost.get("post_id")
         postName = downloadPost.get("post_name")
-        dir = downloadPost.get("dir")
-        waziLog.log("debug", f"({self.name}.{fuName}) ID： {postId}，名称： {postName}，下载目录： {dir}")
+        dirPath = downloadPost.get("dir")
+        waziLog.log("debug", f"({self.name}.{fuName}) ID： {postId}，名称： {postName}，下载目录： {dirPath}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在构建 URL。")
-        url = f"{self.baseURL}ajax/download_post.php?ver=1&dir=/{dir}&post_id={postId}&post_name={quote(postName)}"
+        url = f"{self.baseURL}ajax/download_post.php?ver=1&dir=/{dirPath}&post_id={postId}&post_name={quote(postName)}"
         waziLog.log("debug", f"({self.name}.{fuName}) 构建完成，正在请求。")
         downloadURL = waziAsianToLick.returnSoup(self, url, False, True, True)
         waziLog.log("info", f"({self.name}.{fuName}) 获取 URL 完成： {downloadURL}")
@@ -664,9 +673,6 @@ class waziAsianToLick:
 
         Get the posts on site map.
 
-        Parameters:
-            None
-        
         Return:
             Type: list
             The posts list.
@@ -697,9 +703,6 @@ class waziAsianToLick:
 
         Get the categories on site map.
 
-        Parameters:
-            None
-        
         Return:
             Type: list
             The categories list.
@@ -730,9 +733,6 @@ class waziAsianToLick:
 
         Get the tags on site map.
 
-        Parameters:
-            None
-        
         Return:
             Type: list
             The tags list.
@@ -808,9 +808,11 @@ class waziAsianToLick:
         """
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 收到用户参数。")
-        waziLog.log("debug", f"({self.name}.{fuName}) POST ID： {post}， 分类： {cat}， 标签： {tag}， 搜索： {search}， 页面： {page}， 页码： {index}， 版本： {ver}")
+        waziLog.log("debug", f"({self.name}.{fuName}) POST ID： {post}， 分类： {cat}， 标签： {tag}， 搜索： {search}， 页面： {page}"
+                             f"， 页码： {index}， 版本： {ver}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在构建 URL。")
-        url = f"{self.baseURL}ajax/buscar_posts.php?post={post}&cat={cat}&tag={tag}&search={search}&page={page}&index={index}&ver={ver}"
+        url = f"{self.baseURL}ajax/buscar_posts.php?post={post}&cat={cat}&tag={tag}&search={search}&page={page}" \
+              f"&index={index}&ver={ver}"
         waziLog.log("debug", f"({self.name}.{fuName}) 构建完成： {url}")
         waziLog.log("debug", f"({self.name}.{fuName}) 转移至 getAjaxPosts 接口。")
         return waziAsianToLick.getAjaxPosts(self, waziAsianToLick.returnSoup(self, url, False))
@@ -1127,9 +1129,6 @@ class waziAsianToLick:
 
         Get the categories and tags.
 
-        Parameters:
-            None
-        
         Return:
             Type: Tuple
             A tuple of categories and tags.
@@ -1268,7 +1267,8 @@ class waziAsianToLick:
         """
         fuName = waziFun.getFuncName()
         waziLog.log("debug", f"({self.name}.{fuName}) 收到用户参数。")
-        waziLog.log("debug", f"({self.name}.{fuName}) POST ID： {postId}，名称： {name}，保存路径： {path}，图片 key： {key}，是否下载视频： {video}")
+        waziLog.log("debug", f"({self.name}.{fuName}) POST ID： {postId}，名称： {name}，"
+                             f"保存路径： {path}，图片 key： {key}，是否下载视频： {video}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在获取 POST 信息。")
         info = waziAsianToLick.getPost(self, postId, name)
         waziLog.log("debug", f"({self.name}.{fuName}) 获取 POST 信息完毕，进行空值检查。")

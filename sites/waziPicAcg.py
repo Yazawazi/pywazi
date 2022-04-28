@@ -15,6 +15,7 @@ from mods.waziCheck import waziCheck
 from mods.waziRequest import waziRequest
 from mods.waziFileName import waziFileName
 
+
 class waziPicAcg:
     """
     waziPicAcg
@@ -206,9 +207,6 @@ class waziPicAcg:
         Generate a new uuid, and fill in the headers with other params.
         Called in __init__.
 
-        Parameters:
-            None
-        
         Return:
             None
         
@@ -266,7 +264,7 @@ class waziPicAcg:
                 The url of request.
             
             needAuth: bool
-                Whether need auth.
+                Whether you need auth.
             
             data: object
                 The data of request.
@@ -275,7 +273,7 @@ class waziPicAcg:
                 The method of request.
             
             jsonNeed: bool
-                Whether need return json.
+                Whether you need return json.
         
         Return:
             jsonNeed: True
@@ -325,7 +323,7 @@ class waziPicAcg:
                 The method of request.
             
             jsonNeed: bool
-                Whether need return json.
+                Whether you need return json.
         
         Return:
             jsonNeed: True
@@ -367,7 +365,7 @@ class waziPicAcg:
                 The method of request.
             
             jsonNeed: bool
-                Whether need return json.
+                Whether you need return json.
         
         Return:
             jsonNeed: True
@@ -413,7 +411,7 @@ class waziPicAcg:
                 The method of request.
             
             jsonNeed: bool
-                Whether need return json.
+                Whether you need return json.
         
         Return:
             jsonNeed: True
@@ -504,9 +502,6 @@ class waziPicAcg:
 
         Get all categories.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The categories.
@@ -944,7 +939,8 @@ class waziPicAcg:
         waziLog.log("debug", f"({self.name}.{fuName}) 收到漫画 ID、分 P 数据和页码，正在发起请求。")
         waziLog.log("debug", f"({self.name}.{fuName}) 漫画 ID： {comicId}， 分 P 数据： {eps}， 页码： {page}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在创建 URL。")
-        newUrl = self.urls["comicPages"].replace("{comicId}", comicId).replace("{order}", str(eps)) + "?page=" + str(page)
+        newUrl = self.urls["comicPages"].replace("{comicId}", comicId).replace("{order}", str(eps))
+        newUrl += "?page=" + str(page)
         waziLog.log("debug", f"({self.name}.{fuName}) URL 创建完毕： {newUrl}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在发起请求。")
         return waziPicAcg.up(self, newUrl, True, None, "GET", True)
@@ -962,7 +958,7 @@ class waziPicAcg:
         
         Return:
             Type: dict
-            The recommend comics of comic.
+            To recommend comics of comic.
             May like:
             {
                 "code": int,                                        # The status code of request.
@@ -1002,13 +998,10 @@ class waziPicAcg:
     def getKeywords(self):
         """
         waziPicAcg.getKeywords(self)
-        *Fly me to the mars.*
+        *Fly me to the Mars.*
 
         Get the hot keywords.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The hot keywords.
@@ -1049,7 +1042,8 @@ class waziPicAcg:
                 "message": str,                                     # The message of request.
                 "data": {                                           # The data of request.
                     "comments": {                                   # The comments of user.
-                        "docs": [],                                 # The comment lists of user. (I don't know what could exist inside.)
+                        "docs": [],                                 # The comment lists of user.
+                                                                    # (I don't know what could exist inside.)
                         "total": int,                               # The total of comments.
                         "limit": int,                               # The limit of comments.
                         "page": str,                                # The page of comments.
@@ -1143,9 +1137,6 @@ class waziPicAcg:
 
         Get the profile of user.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The profile of user.
@@ -1555,7 +1546,8 @@ class waziPicAcg:
     def replyComment(self, commentId, content):
         """
         waziPicAcg.replyComment(self, commentId, content)
-        *the internet is truly the festering cesspool of hell born from modern society. but even so, i have nowhere else to turn to. -- NEEDY GIRL OVERDOSE.*
+        *the internet is truly the festering cesspool of hell born from modern society. but even so,
+        I have nowhere else to turn to. -- NEEDY GIRL OVERDOSE.*
 
         Reply comment.
 
@@ -2100,11 +2092,8 @@ class waziPicAcg:
 
         Punch in.
 
-        Parameters:
-            None
-        
         Return:
-            If sueccess:
+            If success:
                 Type: dict
                 {
                     "code": int,                          # The code of response.
@@ -2610,9 +2599,6 @@ class waziPicAcg:
 
         Get the 24 hours leader board.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The response of server.
@@ -2661,9 +2647,6 @@ class waziPicAcg:
 
         Get the 7 days leader board.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The response of server.
@@ -2712,9 +2695,6 @@ class waziPicAcg:
 
         Get the 30 days leader board.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The response of server.
@@ -2763,9 +2743,6 @@ class waziPicAcg:
 
         Get the knight leader board.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The response of server.
@@ -2811,9 +2788,6 @@ class waziPicAcg:
 
         Get the random comics.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The response of server.
@@ -2857,9 +2831,6 @@ class waziPicAcg:
 
         Get the collections.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The response of server.
@@ -2905,9 +2876,6 @@ class waziPicAcg:
 
         Get the banners.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The response of server.
@@ -2947,9 +2915,6 @@ class waziPicAcg:
 
         Initialize and ...
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The response of server.
@@ -2976,9 +2941,6 @@ class waziPicAcg:
         
         Get android initialization.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The response of server.
@@ -2989,13 +2951,13 @@ class waziPicAcg:
                 "data": {                                       # The data of response.
                     "isPunched": bool,                          # Whether the user is punched.
                     "latestApplication": {                      # The latest application.
-                        "_id": str,                             # The id of latest application.
-                        "downloadUrl": str,                     # The download url of latest application.
-                        "updateContent": str,                   # The update content of latest application.
-                        "version": str,                         # The version of latest application.
-                        "updated_at": str,                      # The update time of latest application.
-                        "created_at": str,                      # The create time of latest application.
-                        "apk": {                                # The apk of latest application.
+                        "_id": str,                             # The id of the latest application.
+                        "downloadUrl": str,                     # The download url of the latest application.
+                        "updateContent": str,                   # The update content of the latest application.
+                        "version": str,                         # The version of the latest application.
+                        "updated_at": str,                      # The update time of the latest application.
+                        "created_at": str,                      # The creation time of latest application.
+                        "apk": {                                # The apk of the latest application.
                             "originalName": str,                # The original name of apk.
                             "path": str,                        # The path of apk.
                             "fileServer": str                   # The file server of apk.
@@ -3182,7 +3144,9 @@ class waziPicAcg:
         waziLog.log("debug", f"({self.name}.{fuName}) 创建完成，正在发起请求。")
         temp = waziPicAcg.justUP(self, thumbs[2], None, "GET", False)
         waziLog.log("debug", f"({self.name}.{fuName}) 发起完成，正在写入。")
-        filePath = os.path.join(path, self.fileName.toRight(thumbs[1].strip()), "thumb_" + self.fileName.toRight(thumbs[0]))
+        filePath = os.path.join(path,
+                                self.fileName.toRight(thumbs[1].strip()),
+                                "thumb_" + self.fileName.toRight(thumbs[0]))
         with open(filePath, "wb") as f:
             f.write(temp.data)
         waziLog.log("info", f"({self.name}.{fuName}) 已写入到： {filePath}")
@@ -3195,9 +3159,6 @@ class waziPicAcg:
 
         Get the chat.
 
-        Parameters:
-            None
-        
         Return:
             Type: data
             The chat.
@@ -3230,9 +3191,6 @@ class waziPicAcg:
 
         Get the APPs.
 
-        Parameters:
-            None
-        
         Return:
             Type: dict
             The APPs.
@@ -3639,7 +3597,9 @@ class waziPicAcg:
                 "message": str,                                     # The message of the response.
                 "data": {                                           # The data of the response.
                     "notifications": {                              # The notifications.
-                        "docs": [],                                 # The list of the notifications. I do not know what is the structure of the notification.
+                        "docs": [],                                 # The list of the notifications.
+                                                                    # I do not know what is the
+                                                                    # structure of the notification.
                         "total": int,                               # The total number of the notifications.
                         "limit": int,                               # The limit of the notifications.
                         "page": int,                                # The page number of the notifications.
@@ -3866,7 +3826,8 @@ class waziPicAcg:
 
         Parameters:
             backJson: dict
-                The comics. Accept waziPicAcg.advancedSearch(), waziPicAcg.getComics() and waziPicAcg.search() return value.
+                The comics.
+                Accept waziPicAcg.advancedSearch(), waziPicAcg.getComics() and waziPicAcg.search() return value.
             
             filters: list[str]
                 The filters. Fill in the categories you do not want.
@@ -3924,9 +3885,6 @@ class waziPicAcg:
 
         Login out the account.
 
-        Parameters:
-            None
-        
         Return:
             None
         

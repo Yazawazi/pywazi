@@ -4,6 +4,7 @@ mods/waziColor.py
 class: waziColor
 """
 
+
 class waziColor:
     """
     waziColor

@@ -4,6 +4,7 @@ import threading
 from mods import waziFun
 from ins.waziInsLog import waziLog
 
+
 class waziDownload:
     """
     waziDownload
@@ -16,7 +17,11 @@ class waziDownload:
             The proxies to use. Default: {"http": "http://127.0.0.1:7890", "https": "http://127.0.0.1:7890"}
         
         headers: dict
-            The headers to use. Default: {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"}
+            The headers to use. Default:
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+                               AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+            }
         
         url: str
             The url to download.
@@ -54,7 +59,8 @@ class waziDownload:
             "https": "http://127.0.0.1:7890"
         }
         self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/80.0.3987.132 Safari/537.36"
         }
         self.url = ""
         self.threadsNumber = 8
@@ -70,9 +76,6 @@ class waziDownload:
 
         Get the range of the file to download.
 
-        Parameters:
-            None
-        
         Return:
             ranges: list[tuple]
                 The ranges of the file to download.
@@ -100,9 +103,6 @@ class waziDownload:
 
         Get the size of the file to download.
 
-        Parameters:
-            None
-        
         Return:
             None
         
@@ -210,7 +210,8 @@ class waziDownload:
         
         Return:
             Type: bool
-            Whether the download process is successful. But if failed, it will raise an error, no "False" will be returned.
+            Whether the download process is successful.
+            But if failed, it will raise an error, no "False" will be returned.
         
         Errors:
             Python:

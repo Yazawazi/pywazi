@@ -7,6 +7,7 @@ class: waziFileName
 from mods import waziFun
 from ins.waziInsLog import waziLog
 
+
 class waziFileName:
     """
     waziFileName
