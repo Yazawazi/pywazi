@@ -1332,33 +1332,6 @@ class waziAsianToLick:
         waziLog.log("info", f"({self.name}.{fuName}) 下载完毕，返回结果： {(downloadFiles, cannotDownloadFiles)}")
         return downloadFiles, cannotDownloadFiles
 
-    def getPostDownloadURL(self, postId):
-        """
-        waziAsianToLick.getPostDownloadURL(self, postId)
-        *ooo*
-
-        Get the download url of the post.
-
-        Parameters:
-            postId: int or str
-                The post id.
-        
-        Return:
-            Type: str
-            The download url of the post.
-        
-        Errors:
-            Python:
-                Perhaps there are potential errors.
-        """
-        fuName = waziFun.getFuncName()
-        waziLog.log("debug", f"({self.name}.{fuName}) 收到用户参数。")
-        waziLog.log("debug", f"({self.name}.{fuName}) POST ID： {postId}")
-        waziLog.log("debug", f"({self.name}.{fuName}) 正在构建 URL。")
-        url = f"{self.baseURL}download-{postId}/download"
-        waziLog.log("debug", f"({self.name}.{fuName}) 构建 URL 完毕，转移至 getTrueDownloadURL 接口。")
-        return waziAsianToLick.getTrueDownloadURL(self, waziAsianToLick.returnSoup(self, url, False))
-
     def downloadPost(self, postId, path):
         """
         waziAsianToLick.downloadPost(self, postId, path)
@@ -1386,8 +1359,10 @@ class waziAsianToLick:
         waziLog.log("debug", f"({self.name}.{fuName}) 收到用户参数。")
         waziLog.log("debug", f"({self.name}.{fuName}) POST ID： {postId}， 保存路径： {path}")
         waziLog.log("debug", f"({self.name}.{fuName}) 正在构建 URL。")
-        url = f"{self.baseURL}download-{postId}/download"
+        url = f"{self.baseURL}post-{postId}/"
         waziLog.log("debug", f"({self.name}.{fuName}) 构建 URL 完毕，正在获取 Soup。")
+        soup = waziAsianToLick.returnSoup(self, url, False)
+        url = soup.find("a", {"class": "download_post"})["href"]
         soup = waziAsianToLick.returnSoup(self, url, False)
         waziLog.log("debug", f"({self.name}.{fuName}) Soup 获取完毕，正在获取标题。")
         try:
